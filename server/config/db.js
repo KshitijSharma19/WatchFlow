@@ -10,6 +10,11 @@ if (process.platform === "win32" && !process.env.VERCEL) {
   }
 }
 
+// In serverless environments, disable Mongoose buffering to prevent 10s query hangs
+if (process.env.VERCEL) {
+  mongoose.set("bufferCommands", false);
+}
+
 let isConnected = false;
 
 const connectDB = async () => {
