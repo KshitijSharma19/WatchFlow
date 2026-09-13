@@ -2,17 +2,17 @@ const bcrypt = require("bcryptjs");
 
 const User = require("../models/User");
 const generateToken = require("../utils/generateToken");
-
 const userResponse = require("../utils/userResponse");
 
 exports.registerUser = async (req, res) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, name, email, password } = req.body;
+    const displayName = username || name;
 
-    if (!username || !email || !password) {
+    if (!displayName || !email || !password) {
       return res.status(400).json({
         success: false,
-        message: "All fields are required",
+        message: "All fields (name/username, email, password) are required",
       });
     }
 
@@ -25,14 +25,14 @@ exports.registerUser = async (req, res) => {
     if (existingUser) {
       return res.status(409).json({
         success: false,
-        message: "User already exists",
+        message: "User already exists with this email",
       });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const user = await User.create({
-      username: username.trim(),
+      username: displayName.trim(),
       email: normalizedEmail,
       password: hashedPassword,
     });
@@ -45,11 +45,11 @@ exports.registerUser = async (req, res) => {
       user: userResponse(user),
     });
   } catch (error) {
-    console.error("Auth Controller:", error.message);
+    console.error("Auth Controller Error:", error.message);
 
     res.status(500).json({
       success: false,
-      message: "Server error",
+      message: error.message || "Server error during registration",
     });
   }
 };
@@ -95,11 +95,11 @@ exports.loginUser = async (req, res) => {
       user: userResponse(user),
     });
   } catch (error) {
-    console.error("Auth Controller:", error.message);
+    console.error("Auth Controller Error:", error.message);
 
     res.status(500).json({
       success: false,
-      message: "Server error",
+      message: error.message || "Server error during login",
     });
   }
 };

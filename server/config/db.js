@@ -1,11 +1,13 @@
 const mongoose = require("mongoose");
 const dns = require("dns");
 
-// Workaround for Node.js DNS SRV record lookup issues on Windows
-try {
-  dns.setServers(["8.8.8.8", "1.1.1.1"]);
-} catch (err) {
-  console.warn("Could not set custom DNS servers:", err.message);
+// Apply custom DNS servers ONLY on local Windows environments, NEVER on cloud / Vercel Linux containers
+if (process.platform === "win32" && !process.env.VERCEL) {
+  try {
+    dns.setServers(["8.8.8.8", "1.1.1.1"]);
+  } catch (err) {
+    console.warn("Could not set custom DNS servers:", err.message);
+  }
 }
 
 let isConnected = false;
@@ -23,6 +25,7 @@ const connectDB = async () => {
   try {
     const conn = await mongoose.connect(process.env.MONGO_URI, {
       serverSelectionTimeoutMS: 5000,
+      connectTimeoutMS: 5000,
     });
     isConnected = true;
     console.log(`🍃 MongoDB connected successfully: ${conn.connection.host}`);
