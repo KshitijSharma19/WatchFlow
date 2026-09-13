@@ -2,6 +2,10 @@ const connectDB = require("../server/config/db");
 const app = require("../server/server");
 
 module.exports = async (req, res) => {
-  await connectDB();
+  try {
+    await connectDB();
+  } catch (err) {
+    console.error("❌ [Vercel Serverless DB Error]", err.message);
+  }
   return app(req, res);
 };
