@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --bg-main: #030005;
+    --text-main: #f5f5f5;
+    --toast-bg: #111111;
+    --toast-color: #ffffff;
+    --toast-border: #262626;
+  }
+
+  html.light {
+    --bg-main: #f8fafc;
+    --text-main: #0f172a;
+    --toast-bg: #ffffff;
+    --toast-color: #0f172a;
+    --toast-border: #e2e8f0;
+    color-scheme: light;
+  }
+
+  html.dark {
+    --bg-main: #030005;
+    --text-main: #f5f5f5;
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+}
