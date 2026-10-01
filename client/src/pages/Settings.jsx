@@ -123,10 +123,12 @@ export default function Settings() {
 
   useEffect(() => {
     if (user) {
+      const displayName = user.name || user.username || "";
+      const displayEmail = user.email || "";
       queueMicrotask(() => {
         setProfile((prev) => {
-          if (prev.name === user.name && prev.email === user.email) return prev;
-          return { name: user.name || "", email: user.email || "" };
+          if (prev.name === displayName && prev.email === displayEmail) return prev;
+          return { name: displayName, email: displayEmail };
         });
       });
     }
@@ -155,21 +157,21 @@ export default function Settings() {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`group relative flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left border ${
+                className={`group relative flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left border cursor-pointer ${
                   isActive
                     ? tab.isDanger
-                      ? "bg-red-950/40 border-red-600/40 text-red-400"
-                      : "bg-[#BA3C3C]/15 border-[#BA3C3C]/30 text-red-400"
-                    : "border-transparent text-zinc-400 hover:bg-zinc-900/60 hover:text-zinc-200"
+                      ? "bg-red-50 border-red-200 text-red-600 dark:bg-red-950/40 dark:border-red-600/40 dark:text-red-400 font-semibold shadow-xs"
+                      : "bg-red-50 border-red-200 text-red-600 dark:bg-[#BA3C3C]/15 dark:border-[#BA3C3C]/30 dark:text-red-400 font-semibold shadow-xs"
+                    : "border-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-zinc-900/60 dark:hover:text-zinc-200"
                 }`}
               >
                 <Icon
                   className={`w-4 h-4 transition-colors duration-200 ${
                     isActive
                       ? tab.isDanger
-                        ? "text-red-500"
-                        : "text-red-400"
-                      : "text-zinc-500 group-hover:text-zinc-300"
+                        ? "text-red-600 dark:text-red-500"
+                        : "text-red-600 dark:text-red-400"
+                      : "text-slate-400 group-hover:text-slate-600 dark:text-zinc-500 dark:group-hover:text-zinc-300"
                   }`}
                 />
                 {tab.label}
@@ -189,11 +191,11 @@ export default function Settings() {
               >
                 <form
                   onSubmit={handleUpdateProfile}
-                  className="divide-y divide-zinc-800/60"
+                  className="divide-y divide-slate-100 dark:divide-zinc-800/60"
                 >
                   <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-zinc-400">
+                      <label className="text-xs font-medium text-slate-700 dark:text-zinc-400">
                         Full Name
                       </label>
                       <input
@@ -202,12 +204,12 @@ export default function Settings() {
                         autoComplete="name"
                         value={profile.name}
                         onChange={handleProfileChange}
-                        className="w-full bg-zinc-950 border border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-zinc-100 focus:outline-none transition-all"
+                        className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none transition-all shadow-2xs"
                         required
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-zinc-400">
+                      <label className="text-xs font-medium text-slate-700 dark:text-zinc-400">
                         Email Address
                       </label>
                       <input
@@ -216,13 +218,13 @@ export default function Settings() {
                         autoComplete="email"
                         value={profile.email}
                         onChange={handleProfileChange}
-                        className="w-full bg-zinc-950 border border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-zinc-100 focus:outline-none transition-all"
+                        className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none transition-all shadow-2xs"
                         required
                       />
                     </div>
                   </div>
 
-                  <div className="px-6 py-3.5 bg-zinc-900/20 flex justify-end">
+                  <div className="px-6 py-3.5 bg-slate-50/80 dark:bg-zinc-900/20 border-t border-slate-100 dark:border-zinc-800/60 flex justify-end">
                     <button
                       type="submit"
                       disabled={profileSaving}
@@ -246,11 +248,11 @@ export default function Settings() {
               >
                 <form
                   onSubmit={handleUpdatePassword}
-                  className="divide-y divide-zinc-800/60"
+                  className="divide-y divide-slate-100 dark:divide-zinc-800/60"
                 >
                   <div className="p-6 space-y-4">
                     <div className="space-y-1.5 max-w-md">
-                      <label className="text-xs font-medium text-zinc-400">
+                      <label className="text-xs font-medium text-slate-700 dark:text-zinc-400">
                         Current Password
                       </label>
                       <input
@@ -260,13 +262,13 @@ export default function Settings() {
                         value={security.currentPassword}
                         onChange={handleSecurityChange}
                         placeholder="••••••••"
-                        className="w-full bg-zinc-950 border border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-zinc-100 focus:outline-none transition-all"
+                        className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none transition-all shadow-2xs"
                       />
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-zinc-400">
+                        <label className="text-xs font-medium text-slate-700 dark:text-zinc-400">
                           New Password
                         </label>
                         <input
@@ -275,11 +277,11 @@ export default function Settings() {
                           autoComplete="new-password"
                           value={security.newPassword}
                           onChange={handleSecurityChange}
-                          className="w-full bg-zinc-950 border border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-zinc-100 focus:outline-none transition-all"
+                          className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none transition-all shadow-2xs"
                         />
                       </div>
                       <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-zinc-400">
+                        <label className="text-xs font-medium text-slate-700 dark:text-zinc-400">
                           Confirm Password
                         </label>
                         <input
@@ -289,13 +291,13 @@ export default function Settings() {
                           value={security.confirmPassword}
                           onChange={handleSecurityChange}
                           placeholder="Re-enter password"
-                          className="w-full bg-zinc-950 border border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-zinc-100 focus:outline-none transition-all"
+                          className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none transition-all shadow-2xs"
                         />
                       </div>
                     </div>
                   </div>
 
-                  <div className="px-6 py-3.5 bg-zinc-900/20 flex justify-end">
+                  <div className="px-6 py-3.5 bg-slate-50/80 dark:bg-zinc-900/20 border-t border-slate-100 dark:border-zinc-800/60 flex justify-end">
                     <button
                       type="submit"
                       disabled={passwordSaving}
@@ -324,14 +326,14 @@ export default function Settings() {
                 title="Theme Mode"
                 subtitle="System theme preferences"
                 right={
-                  <div className="flex bg-zinc-950 p-1 rounded-xl border border-zinc-800 text-xs gap-1">
+                  <div className="flex bg-slate-100 dark:bg-zinc-950 p-1 rounded-xl border border-slate-200 dark:border-zinc-800 text-xs gap-1">
                     <button
                       type="button"
                       onClick={() => setTheme("dark")}
                       className={`px-3 py-1 rounded-lg font-medium transition-colors cursor-pointer ${
                         theme === "dark"
-                          ? "bg-[#BA3C3C]/20 border border-[#BA3C3C]/30 text-red-400"
-                          : "text-zinc-400 hover:text-white"
+                          ? "bg-white dark:bg-[#BA3C3C]/20 border border-slate-300 dark:border-[#BA3C3C]/30 text-red-600 dark:text-red-400 font-semibold shadow-xs"
+                          : "text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
                       }`}
                     >
                       Dark
@@ -341,8 +343,8 @@ export default function Settings() {
                       onClick={() => setTheme("light")}
                       className={`px-3 py-1 rounded-lg font-medium transition-colors cursor-pointer ${
                         theme === "light"
-                          ? "bg-[#BA3C3C]/20 border border-[#BA3C3C]/30 text-red-400"
-                          : "text-zinc-400 hover:text-white"
+                          ? "bg-white dark:bg-[#BA3C3C]/20 border border-slate-300 dark:border-[#BA3C3C]/30 text-red-600 dark:text-red-400 font-semibold shadow-xs"
+                          : "text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
                       }`}
                     >
                       Light
@@ -364,10 +366,10 @@ export default function Settings() {
                 subtitle="WatchFlow Build System"
                 right={
                   <div className="flex items-center gap-2">
-                    <span className="font-mono text-xs text-zinc-400">
+                    <span className="font-mono text-xs text-slate-500 dark:text-zinc-400">
                       v1.0.0
                     </span>
-                    <span className="text-[10px] uppercase font-bold tracking-wider bg-[#BA3C3C]/20 border border-[#BA3C3C]/30 text-red-400 px-2 py-0.5 rounded-lg">
+                    <span className="text-[10px] uppercase font-bold tracking-wider bg-red-50 dark:bg-[#BA3C3C]/20 border border-red-200 dark:border-[#BA3C3C]/30 text-red-600 dark:text-red-400 px-2 py-0.5 rounded-lg">
                       Latest
                     </span>
                   </div>

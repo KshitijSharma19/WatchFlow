@@ -33,6 +33,7 @@ exports.registerUser = async (req, res) => {
 
     const user = await User.create({
       username: displayName.trim(),
+      name: displayName.trim(),
       email: normalizedEmail,
       password: hashedPassword,
     });

@@ -54,12 +54,12 @@ export default function CreatePlaylistModal({
       aria-modal="true"
       aria-labelledby="create-playlist-title"
     >
-      <div className="w-full max-w-lg rounded-2xl border border-neutral-800 bg-[#111] p-6">
-        <h2 id="create-playlist-title" className="text-xl font-bold">
+      <div className="w-full max-w-lg rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-[#111] p-6 shadow-2xl text-slate-900 dark:text-white">
+        <h2 id="create-playlist-title" className="text-xl font-bold text-slate-900 dark:text-white">
           Import Playlist
         </h2>
 
-        <p className="mt-2 text-sm text-neutral-400">
+        <p className="mt-2 text-sm text-slate-500 dark:text-neutral-400">
           Paste a YouTube playlist URL.
         </p>
 
@@ -74,7 +74,7 @@ export default function CreatePlaylistModal({
               handleImport();
             }
           }}
-          className="mt-5 w-full rounded-xl border border-neutral-700 bg-neutral-900 px-4 py-3 outline-none transition-colors focus:border-red-500"
+          className="mt-5 w-full rounded-xl border border-slate-300 dark:border-neutral-700 bg-slate-50 dark:bg-neutral-900 px-4 py-3 text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 outline-none transition-colors focus:border-red-500"
         />
 
         <div className="mt-6 flex justify-end gap-3">
@@ -86,7 +86,7 @@ export default function CreatePlaylistModal({
                 onClose();
               }
             }}
-            className="rounded-xl border border-neutral-700 px-5 py-2 transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60"
+            className="rounded-xl border border-slate-300 dark:border-neutral-700 px-5 py-2 text-slate-700 dark:text-neutral-300 transition-colors hover:bg-slate-100 dark:hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60 cursor-pointer"
           >
             Cancel
           </button>
@@ -95,10 +95,10 @@ export default function CreatePlaylistModal({
             type="button"
             disabled={importing || !url.trim()}
             onClick={handleImport}
-            className={`flex items-center gap-2 rounded-xl px-5 py-2 font-medium transition-opacity duration-200 ${
+            className={`flex items-center gap-2 rounded-xl px-5 py-2 font-medium transition-opacity duration-200 cursor-pointer ${
               importing || !url.trim()
-                ? "cursor-not-allowed bg-neutral-700 text-neutral-400"
-                : "bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] hover:opacity-90"
+                ? "cursor-not-allowed bg-slate-200 dark:bg-neutral-700 text-slate-400 dark:text-neutral-400"
+                : "bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] text-white hover:opacity-90"
             }`}
           >
             {importing && <Loader2 className="h-4 w-4 animate-spin" />}

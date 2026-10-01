@@ -77,9 +77,9 @@ export default function Library() {
       <div className="max-w-6xl mx-auto px-4 py-6">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-bold">My Library</h1>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">My Library</h1>
 
-            <p className="text-neutral-400 mt-2 text-sm">
+            <p className="text-slate-500 dark:text-neutral-400 mt-2 text-sm">
               {playlistCount} {playlistCount === 1 ? "playlist" : "playlists"}{" "}
               in your learning collection
             </p>

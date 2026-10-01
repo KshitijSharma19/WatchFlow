@@ -14,17 +14,17 @@ const FeatureCard = memo(({ icon: Icon, title, description, showBorder }) => (
   <div
     className={`flex flex-col items-center text-center px-6 relative group ${
       showBorder
-        ? "lg:after:content-[''] lg:after:absolute lg:after:top-2 lg:after:right-0 lg:after:h-14 lg:after:w-[1px] lg:after:bg-neutral-900/60"
+        ? "lg:after:content-[''] lg:after:absolute lg:after:top-2 lg:after:right-0 lg:after:h-14 lg:after:w-[1px] lg:after:bg-slate-200 dark:lg:after:bg-neutral-900/60"
         : ""
     }`}
   >
-    <div className="w-12 h-12 rounded-xl bg-neutral-950 border border-neutral-900 flex items-center justify-center text-[#E04D4D] mb-4 shadow-md group-hover:border-red-500/20 transition-colors duration-200">
+    <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-neutral-950 border border-slate-200 dark:border-neutral-900 flex items-center justify-center text-[#E04D4D] mb-4 shadow-xs dark:shadow-md group-hover:border-red-500/20 transition-colors duration-200">
       <Icon className="w-5 h-5" strokeWidth={1.5} />
     </div>
-    <h3 className="text-sm sm:text-base font-semibold text-neutral-200 mb-2 tracking-wide">
+    <h3 className="text-sm sm:text-base font-semibold text-slate-800 dark:text-neutral-200 mb-2 tracking-wide">
       {title}
     </h3>
-    <p className="text-xs sm:text-sm text-neutral-500 leading-relaxed max-w-[210px]">
+    <p className="text-xs sm:text-sm text-slate-500 dark:text-neutral-500 leading-relaxed max-w-[210px]">
       {description}
     </p>
   </div>
@@ -62,16 +62,16 @@ export default function WatchFlowHero() {
   );
 
   return (
-    <section className="relative min-h-screen bg-[#030005] text-white overflow-hidden font-sans antialiased flex flex-col justify-center items-center select-none">
+    <section className="relative min-h-screen bg-slate-50 dark:bg-[#030005] text-slate-900 dark:text-white overflow-hidden font-sans antialiased flex flex-col justify-center items-center select-none transition-colors duration-200">
       <BackgroundGlow />
 
       <main className="relative z-10 max-w-5xl mx-auto px-6 py-10 text-center flex flex-col items-center">
-        <div className="inline-flex items-center gap-2.5 bg-neutral-900/60 border border-neutral-800 px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium tracking-wide text-neutral-300 mb-8 backdrop-blur-md shadow-inner">
+        <div className="inline-flex items-center gap-2.5 bg-white/80 dark:bg-neutral-900/60 border border-slate-200 dark:border-neutral-800 px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium tracking-wide text-slate-700 dark:text-neutral-300 mb-8 backdrop-blur-md shadow-xs dark:shadow-inner">
           <span className="text-[#E04D4D] text-[11px]">✦</span> Track. Focus.
           Achieve.
         </div>
 
-        <h1 className="text-4xl sm:text-5xl md:text-[58px] font-bold tracking-tight max-w-[850px] leading-[1.12] text-white mb-6">
+        <h1 className="text-4xl sm:text-5xl md:text-[58px] font-bold tracking-tight max-w-[850px] leading-[1.12] text-slate-900 dark:text-white mb-6">
           Learn from{" "}
           <span className="bg-gradient-to-r from-[#F26464] to-[#E04D4D] bg-clip-text text-transparent">
             YouTube
@@ -80,7 +80,7 @@ export default function WatchFlowHero() {
           without the distractions.
         </h1>
 
-        <p className="text-neutral-400 text-sm sm:text-base md:text-lg max-w-[540px] font-normal leading-relaxed mb-10">
+        <p className="text-slate-600 dark:text-neutral-400 text-sm sm:text-base md:text-lg max-w-[540px] font-normal leading-relaxed mb-10">
           Organize YouTube playlists, track your progress, take notes, and stay
           focused in one dedicated learning workspace.
         </p>
@@ -101,7 +101,7 @@ export default function WatchFlowHero() {
           />
         </Link>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-8 lg:gap-y-0 w-full mt-13 pt-10 border-t border-neutral-900/60">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-y-8 lg:gap-y-0 w-full mt-13 pt-10 border-t border-slate-200 dark:border-neutral-900/60">
           {FEATURES.map((feature, index) => (
             <FeatureCard
               key={feature.title}

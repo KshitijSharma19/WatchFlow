@@ -17,11 +17,11 @@ export default function Loader({
       role="status"
       aria-live="polite"
       className={`flex flex-col items-center justify-center ${
-        fullscreen ? "min-h-screen bg-[#030005]" : "h-[70vh]"
+        fullscreen ? "min-h-screen bg-slate-50 dark:bg-[#030005]" : "h-[70vh]"
       }`}
     >
       <div className={`relative ${spinnerClass}`}>
-        <div className="absolute inset-0 rounded-full border-2 border-neutral-800" />
+        <div className="absolute inset-0 rounded-full border-2 border-slate-200 dark:border-neutral-800" />
 
         <div className="absolute inset-0 animate-spin rounded-full border-2 border-transparent border-r-red-500 border-t-red-500" />
 
@@ -29,11 +29,11 @@ export default function Loader({
       </div>
 
       <div className="mt-6 text-center">
-        <h2 className="text-sm font-semibold text-white md:text-base">
+        <h2 className="text-sm font-semibold text-slate-900 dark:text-white md:text-base">
           {text}
         </h2>
 
-        <p className="mt-1 text-xs text-neutral-500">{subtitle}</p>
+        <p className="mt-1 text-xs text-slate-500 dark:text-neutral-500">{subtitle}</p>
       </div>
     </div>
   );

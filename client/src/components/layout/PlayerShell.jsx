@@ -11,7 +11,7 @@ export default function PlayerShell({
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[#030005] text-white">
+    <div className="relative min-h-screen overflow-hidden bg-slate-50 dark:bg-[#030005] text-slate-900 dark:text-white transition-colors duration-200">
       <BackgroundGlow />
 
       <Sidebar isOpen={isSidebarOpen} setIsOpen={setIsSidebarOpen} />

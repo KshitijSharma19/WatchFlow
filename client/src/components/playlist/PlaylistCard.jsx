@@ -24,7 +24,7 @@ export default function PlaylistCard({
           onClick();
         }
       }}
-      className="relative group cursor-pointer rounded-xl border border-neutral-800 bg-neutral-900/30 p-3 hover:border-red-500/30 hover:bg-neutral-900/50 transition-all duration-200"
+      className="relative group cursor-pointer rounded-xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-neutral-900/30 p-3 hover:border-red-500/30 hover:bg-red-50/20 dark:hover:bg-neutral-900/50 shadow-xs dark:shadow-none transition-all duration-200"
     >
       <div
         className="absolute top-3 right-3 z-10"
@@ -56,16 +56,16 @@ export default function PlaylistCard({
             e.target.onerror = null;
             e.target.src = "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?w=500&auto=format&fit=crop&q=60";
           }}
-          className="w-full sm:w-36 aspect-video rounded-lg object-cover shrink-0 bg-neutral-900"
+          className="w-full sm:w-36 aspect-video rounded-lg object-cover shrink-0 bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-transparent"
         />
 
         <div className="flex-1 flex flex-col justify-between min-w-0 pr-10">
           <div>
-            <h3 className="text-base font-semibold text-white line-clamp-2 group-hover:text-red-300 transition-colors duration-200">
+            <h3 className="text-base font-semibold text-slate-900 dark:text-white line-clamp-2 group-hover:text-red-600 dark:group-hover:text-red-300 transition-colors duration-200">
               {playlist.title}
             </h3>
 
-            <div className="flex items-center gap-4 mt-2 text-xs text-neutral-400">
+            <div className="flex items-center gap-4 mt-2 text-xs text-slate-500 dark:text-neutral-400">
               <span>
                 {completed} / {total} videos
               </span>
@@ -75,7 +75,7 @@ export default function PlaylistCard({
               <span>{progress}%</span>
             </div>
 
-            <div className="mt-3 h-1 rounded-full bg-neutral-800 overflow-hidden">
+            <div className="mt-3 h-1 rounded-full bg-slate-200 dark:bg-neutral-800 overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D]"
                 style={{ width: `${progress}%` }}
@@ -84,7 +84,7 @@ export default function PlaylistCard({
           </div>
 
           <div className="flex justify-end mt-4">
-            <div className="flex items-center gap-2 text-sm text-red-400 font-medium group-hover:translate-x-1 transition-transform duration-200">
+            <div className="flex items-center gap-2 text-sm text-red-600 dark:text-red-400 font-medium group-hover:translate-x-1 transition-transform duration-200">
               Continue
               <ArrowRight className="w-4 h-4" />
             </div>

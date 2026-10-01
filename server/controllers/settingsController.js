@@ -28,9 +28,10 @@ exports.getProfile = async (req, res) => {
 
 exports.updateProfile = async (req, res) => {
   try {
-    const { username, email } = req.body;
+    const resolvedName = (req.body.name || req.body.username || "").trim();
+    const email = req.body.email;
 
-    if (!username?.trim() || !email?.trim()) {
+    if (!resolvedName || !email?.trim()) {
       return res.status(400).json({
         success: false,
         message: "Name and email are required",
@@ -54,7 +55,8 @@ exports.updateProfile = async (req, res) => {
     const updatedUser = await User.findByIdAndUpdate(
       req.user.id,
       {
-        name: username.trim(),
+        username: resolvedName,
+        name: resolvedName,
         email: normalizedEmail,
       },
       {

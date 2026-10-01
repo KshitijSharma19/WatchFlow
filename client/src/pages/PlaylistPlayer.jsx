@@ -168,17 +168,17 @@ export default function PlaylistPlayer() {
           </div>
 
           {/* RIGHT COLUMN: Queue */}
-          <aside className="w-full lg:w-[380px] xl:w-[420px] shrink-0 border border-neutral-800/80 bg-neutral-950/90 rounded-xl overflow-hidden flex flex-col lg:min-h-0 shadow-xl">
-            <div className="px-4 py-3.5 bg-neutral-900/50 border-b border-neutral-800 shrink-0">
+          <aside className="w-full lg:w-[380px] xl:w-[420px] shrink-0 border border-slate-200 dark:border-neutral-800/80 bg-white dark:bg-neutral-950/90 rounded-xl overflow-hidden flex flex-col lg:min-h-0 shadow-xl">
+            <div className="px-4 py-3.5 bg-slate-50 dark:bg-neutral-900/50 border-b border-slate-200 dark:border-neutral-800 shrink-0">
               <div className="flex items-center justify-between">
-                <h2 className="text-sm font-bold text-neutral-100">
+                <h2 className="text-sm font-bold text-slate-900 dark:text-neutral-100">
                   Playlist Queue
                 </h2>
-                <span className="text-[10px] font-mono text-neutral-500">
+                <span className="text-[10px] font-mono text-slate-500 dark:text-neutral-500">
                   {currentIndex + 1} / {videos.length}
                 </span>
               </div>
-              <p className="text-xs text-neutral-400 mt-0.5 truncate">
+              <p className="text-xs text-slate-500 dark:text-neutral-400 mt-0.5 truncate">
                 {playlist?.title}
               </p>
             </div>

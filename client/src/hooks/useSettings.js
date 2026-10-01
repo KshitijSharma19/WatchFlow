@@ -26,6 +26,7 @@ export default function useSettings() {
       setSaving(true);
 
       const res = await api.put("/settings/profile", {
+        name: name,
         username: name,
         email: email,
       });

@@ -68,7 +68,7 @@ export default function ConfirmModal({
       aria-modal="true"
       aria-labelledby="confirm-modal-title"
     >
-      <div className="w-full max-w-md rounded-2xl border border-neutral-800 bg-[#111] shadow-2xl">
+      <div className="w-full max-w-md rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-[#111] shadow-2xl text-slate-900 dark:text-white">
         <div className="flex items-start gap-4 p-6">
           <div
             className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${iconBg}`}
@@ -79,18 +79,18 @@ export default function ConfirmModal({
           <div>
             <h2
               id="confirm-modal-title"
-              className="text-lg font-bold text-white"
+              className="text-lg font-bold text-slate-900 dark:text-white"
             >
               {title}
             </h2>
 
-            <p className="mt-2 text-sm leading-relaxed text-neutral-400">
+            <p className="mt-2 text-sm leading-relaxed text-slate-600 dark:text-neutral-400">
               {message}
             </p>
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 border-t border-neutral-800 px-6 py-4">
+        <div className="flex justify-end gap-3 border-t border-slate-100 dark:border-neutral-800 px-6 py-4">
           <button
             type="button"
             disabled={loading}
@@ -99,7 +99,7 @@ export default function ConfirmModal({
                 onCancel();
               }
             }}
-            className="rounded-xl border border-neutral-700 px-4 py-2 transition-colors hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-xl border border-slate-300 dark:border-neutral-700 px-4 py-2 text-slate-700 dark:text-neutral-300 transition-colors hover:bg-slate-100 dark:hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer"
           >
             {cancelText}
           </button>
@@ -108,7 +108,7 @@ export default function ConfirmModal({
             type="button"
             disabled={loading}
             onClick={onConfirm}
-            className={`rounded-xl px-4 py-2 text-white transition-opacity duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 ${buttonClass}`}
+            className={`rounded-xl px-4 py-2 text-white transition-opacity duration-200 hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 cursor-pointer ${buttonClass}`}
           >
             {loading ? loadingText : confirmText}
           </button>

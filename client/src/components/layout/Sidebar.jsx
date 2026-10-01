@@ -91,7 +91,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-64 flex flex-col justify-between p-6 border-r border-neutral-950/60 bg-neutral-950/40 backdrop-blur-2xl transition-transform duration-300 ease-in-out ${
+        className={`fixed inset-y-0 left-0 z-50 w-64 flex flex-col justify-between p-6 border-r border-neutral-950/60 bg-neutral-950/90 backdrop-blur-2xl transition-transform duration-300 ease-in-out ${
           isOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
@@ -104,7 +104,7 @@ export default function Sidebar({ isOpen, setIsOpen }) {
             <button
               onClick={closeSidebar}
               aria-label="Close sidebar"
-              className="p-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white transition-colors"
+              className="p-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white transition-colors cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>

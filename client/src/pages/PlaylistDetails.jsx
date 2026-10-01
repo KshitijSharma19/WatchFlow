@@ -106,7 +106,7 @@ export default function PlaylistDetails() {
 
   if (!playlist) {
     return (
-      <div className="min-h-screen bg-[#030005] text-white flex items-center justify-center font-sans">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#030005] text-slate-900 dark:text-white flex items-center justify-center font-sans">
         Playlist not found
       </div>
     );
@@ -115,9 +115,9 @@ export default function PlaylistDetails() {
   return (
     <AppShell showBack title={playlist.title || "Playlist"}>
       <main className="w-full max-w-6xl mx-auto px-5 pb-6 font-sans">
-        <section className="bg-neutral-900/40 border border-neutral-800 rounded-2xl p-6 mb-6">
+        <section className="bg-white dark:bg-neutral-900/40 border border-slate-200 dark:border-neutral-800 rounded-2xl p-6 mb-6 shadow-xs dark:shadow-none">
           <div className="flex flex-col md:flex-row gap-6">
-            <div className="w-full md:w-80 aspect-video rounded-xl overflow-hidden shrink-0">
+            <div className="w-full md:w-80 aspect-video rounded-xl overflow-hidden shrink-0 bg-slate-100 dark:bg-neutral-950 border border-slate-200 dark:border-transparent">
               <img
                 src={playlist.thumbnailUrl}
                 alt={playlist.title}
@@ -127,11 +127,11 @@ export default function PlaylistDetails() {
             </div>
 
             <div className="flex-1">
-              <h1 className="text-2xl font-bold mb-3">{playlist.title}</h1>
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">{playlist.title}</h1>
 
               <div className="mb-4">
                 <p
-                  className={`text-sm text-neutral-400 ${showFullDescription ? "" : "line-clamp-4"}`}
+                  className={`text-sm text-slate-600 dark:text-neutral-400 ${showFullDescription ? "" : "line-clamp-4"}`}
                 >
                   {playlist.description}
                 </p>
@@ -140,21 +140,21 @@ export default function PlaylistDetails() {
                   <button
                     type="button"
                     onClick={() => setShowFullDescription((prev) => !prev)}
-                    className="mt-2 text-xs text-red-400 hover:text-red-300 font-medium transition-colors"
+                    className="mt-2 text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium transition-colors cursor-pointer"
                   >
                     {showFullDescription ? "See Less" : "See More"}
                   </button>
                 )}
               </div>
 
-              <div className="flex justify-between items-center text-sm text-neutral-500 mb-3">
+              <div className="flex justify-between items-center text-sm text-slate-500 dark:text-neutral-500 mb-3">
                 <span>
                   {completedCount}/{videos.length} completed
                 </span>
                 <span>{totalRemainingHours} hrs left</span>
               </div>
 
-              <div className="w-full h-2 rounded-full bg-neutral-800 overflow-hidden">
+              <div className="w-full h-2 rounded-full bg-slate-200 dark:bg-neutral-800 overflow-hidden">
                 <div
                   className="h-full bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D]"
                   style={{ width: `${progress}%` }}
@@ -165,7 +165,7 @@ export default function PlaylistDetails() {
         </section>
 
         <section>
-          <h2 className="text-lg font-semibold mb-4">Videos</h2>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white mb-4">Videos</h2>
 
           <div className="space-y-3">
             {videos.map((video, index) => (

@@ -82,7 +82,7 @@ export default function Heatmap({ heatmap = {}, days = 365 }) {
   const getColor = (activity) => {
     const videos = activity?.videosCompleted ?? 0;
 
-    if (videos === 0) return "bg-neutral-800";
+    if (videos === 0) return "bg-slate-200 dark:bg-neutral-800";
     if (videos === 1) return "bg-red-500/25";
     if (videos <= 3) return "bg-red-500/60";
 
@@ -115,13 +115,13 @@ export default function Heatmap({ heatmap = {}, days = 365 }) {
   };
 
   return (
-    <div className="bg-neutral-900/30 border border-neutral-800 rounded-xl p-5 w-full">
-      <h2 className="text-sm font-semibold mb-4 text-white">
+    <div className="bg-white dark:bg-neutral-900/30 border border-slate-200 dark:border-neutral-800 rounded-xl p-5 w-full shadow-xs dark:shadow-none">
+      <h2 className="text-sm font-semibold mb-4 text-slate-900 dark:text-white">
         Consistency Heatmap
       </h2>
 
       <div className="flex gap-3">
-        <div className="flex flex-col gap-1 text-[11px] text-neutral-500 shrink-0 select-none pt-6">
+        <div className="flex flex-col gap-1 text-[11px] text-slate-400 dark:text-neutral-500 shrink-0 select-none pt-6">
           {WEEK_DAYS.map((day) => (
             <div
               key={day}
@@ -134,7 +134,7 @@ export default function Heatmap({ heatmap = {}, days = 365 }) {
 
         <div
           ref={scrollContainerRef}
-          className="overflow-x-auto flex-1 pb-3 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-neutral-900/50 [&::-webkit-scrollbar-thumb]:bg-neutral-700/60 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-neutral-600"
+          className="overflow-x-auto flex-1 pb-3 [&::-webkit-scrollbar]:h-2 [&::-webkit-scrollbar-track]:bg-slate-100 dark:[&::-webkit-scrollbar-track]:bg-neutral-900/50 [&::-webkit-scrollbar-thumb]:bg-slate-300 dark:[&::-webkit-scrollbar-thumb]:bg-neutral-700/60 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-slate-400 dark:hover:[&::-webkit-scrollbar-thumb]:bg-neutral-600"
         >
           <div className="flex gap-1 w-max">
             {weeks.map((week, weekIndex) => {
@@ -148,7 +148,7 @@ export default function Heatmap({ heatmap = {}, days = 365 }) {
                   key={weekIndex}
                   className={`flex flex-col gap-1 ${isNewMonth ? "ml-3.5" : ""}`}
                 >
-                  <div className="h-5 text-[11px] text-neutral-400 font-medium relative w-4">
+                  <div className="h-5 text-[11px] text-slate-500 dark:text-neutral-400 font-medium relative w-4">
                     {monthLabel && (
                       <span className="absolute left-1/2 -translate-x-1/2 top-0 whitespace-nowrap select-none">
                         {monthLabel}
@@ -201,12 +201,12 @@ export default function Heatmap({ heatmap = {}, days = 365 }) {
         </div>
       </div>
 
-      <div className="flex items-center justify-start gap-2 mt-4 text-xs text-neutral-400 select-none">
+      <div className="flex items-center justify-start gap-2 mt-4 text-xs text-slate-500 dark:text-neutral-400 select-none">
         <span>Less</span>
         <div className="flex items-center gap-1">
           <div
             title="0 videos"
-            className="w-3.5 h-3.5 rounded bg-neutral-800"
+            className="w-3.5 h-3.5 rounded bg-slate-200 dark:bg-neutral-800"
           />
           <div title="1 video" className="w-3.5 h-3.5 rounded bg-red-500/25" />
           <div
@@ -220,20 +220,20 @@ export default function Heatmap({ heatmap = {}, days = 365 }) {
 
       {canHover && tooltip && (
         <div
-          className="fixed z-50 pointer-events-none rounded-xl border border-neutral-700 bg-[#111] px-4 py-3 shadow-2xl transition-all duration-150 ease-out"
+          className="fixed z-50 pointer-events-none rounded-xl border border-slate-200 dark:border-neutral-700 bg-white dark:bg-[#111] px-4 py-3 shadow-2xl transition-all duration-150 ease-out"
           style={getTooltipStyles()}
         >
-          <p className="font-semibold text-white">
+          <p className="font-semibold text-slate-900 dark:text-white">
             {tooltip.day.date.toLocaleDateString(undefined, {
               year: "numeric",
               month: "short",
               day: "numeric",
             })}
           </p>
-          <p className="text-sm text-neutral-400 mt-2 flex items-center gap-1.5">
+          <p className="text-sm text-slate-600 dark:text-neutral-400 mt-2 flex items-center gap-1.5">
             <span>🎬</span> {tooltip.day.activity.videosCompleted} videos
           </p>
-          <p className="text-sm text-neutral-400 flex items-center gap-1.5">
+          <p className="text-sm text-slate-600 dark:text-neutral-400 flex items-center gap-1.5">
             <span>⏱</span> {tooltip.day.activity.minutesStudied} mins
           </p>
         </div>

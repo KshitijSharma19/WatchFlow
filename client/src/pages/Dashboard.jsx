@@ -173,20 +173,20 @@ export default function Dashboard() {
               return (
                 <div
                   key={stat.title}
-                  className="bg-neutral-900/40 border border-neutral-800/60 p-4 rounded-xl backdrop-blur-md flex items-center justify-between"
+                  className="bg-white dark:bg-neutral-900/40 border border-slate-200 dark:border-neutral-800/60 p-4 rounded-xl backdrop-blur-md shadow-xs dark:shadow-none flex items-center justify-between"
                 >
                   <div>
-                    <p className="text-[10px] font-medium text-neutral-400 uppercase tracking-wider">
+                    <p className="text-[10px] font-medium text-slate-500 dark:text-neutral-400 uppercase tracking-wider">
                       {stat.title}
                     </p>
 
-                    <p className="text-2xl font-bold mt-1 text-gray-100">
+                    <p className="text-2xl font-bold mt-1 text-slate-900 dark:text-gray-100">
                       {stat.value}
                     </p>
                   </div>
 
                   <div
-                    className={`w-9 h-9 rounded-lg bg-neutral-950 border border-neutral-800 flex items-center justify-center ${stat.color}`}
+                    className={`w-9 h-9 rounded-lg bg-slate-100 dark:bg-neutral-950 border border-slate-200 dark:border-neutral-800 flex items-center justify-center ${stat.color}`}
                   >
                     <Icon className="w-4 h-4" />
                   </div>
@@ -195,19 +195,19 @@ export default function Dashboard() {
             })}
 
             {streakData && (
-              <div className="bg-gradient-to-br from-[#BA3C3C]/15 to-neutral-900 border border-red-500/15 rounded-xl p-4 backdrop-blur-md flex flex-col justify-between">
+              <div className="bg-gradient-to-br from-red-50 to-white dark:from-[#BA3C3C]/15 dark:to-neutral-900 border border-red-200/80 dark:border-red-500/15 rounded-xl p-4 backdrop-blur-md shadow-xs dark:shadow-none flex flex-col justify-between">
                 <div>
-                  <p className="text-[10px] text-neutral-400 uppercase tracking-wider">
+                  <p className="text-[10px] text-slate-500 dark:text-neutral-400 uppercase tracking-wider">
                     Current Streak
                   </p>
 
-                  <h2 className="text-2xl font-bold mt-1 flex items-center gap-1">
+                  <h2 className="text-2xl font-bold mt-1 flex items-center gap-1 text-slate-900 dark:text-white">
                     {streakData.currentStreak}
                     <span className="text-xl">🔥</span>
                   </h2>
                 </div>
 
-                <p className="text-[10px] text-neutral-500 mt-1">
+                <p className="text-[10px] text-slate-500 dark:text-neutral-500 mt-1">
                   Longest streak: {streakData.longestStreak} days
                 </p>
               </div>
@@ -218,14 +218,14 @@ export default function Dashboard() {
           <section className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
             {streakData && <Heatmap heatmap={streakData.heatmap} />}
 
-            <div className="bg-neutral-900/30 border border-neutral-800 rounded-xl p-5">
-              <p className="text-xs uppercase tracking-wider text-neutral-400 mb-4">
+            <div className="bg-white dark:bg-neutral-900/30 border border-slate-200 dark:border-neutral-800 rounded-xl p-5 shadow-xs dark:shadow-none">
+              <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-neutral-400 mb-4 font-semibold">
                 Continue Learning
               </p>
 
               {continueData ? (
                 <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="w-full sm:w-44 aspect-video rounded-xl overflow-hidden shrink-0 bg-neutral-900">
+                  <div className="w-full sm:w-44 aspect-video rounded-xl overflow-hidden shrink-0 bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-transparent">
                     <img
                       src={continueData.video.thumbnailUrl}
                       alt={continueData.video.title}
@@ -239,22 +239,22 @@ export default function Dashboard() {
 
                   <div className="flex flex-col justify-between flex-1">
                     <div>
-                      <h2 className="text-lg font-bold">
+                      <h2 className="text-lg font-bold text-slate-900 dark:text-white">
                         {continueData.playlist.title}
                       </h2>
 
-                      <p className="text-red-400 text-sm mt-2">
+                      <p className="text-red-600 dark:text-red-400 text-sm mt-2 font-medium">
                         ▶ {continueData.video.title}
                       </p>
 
-                      <p className="text-xs text-neutral-500 mt-2">
+                      <p className="text-xs text-slate-500 dark:text-neutral-400 mt-2">
                         Resume at{" "}
                         {formatTime(continueData.video.watchedSeconds)}
                       </p>
                     </div>
 
                     <div className="mt-4">
-                      <div className="h-1.5 rounded-full bg-neutral-800 overflow-hidden">
+                      <div className="h-1.5 rounded-full bg-slate-200 dark:bg-neutral-800 overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D]"
                           style={{
@@ -270,7 +270,7 @@ export default function Dashboard() {
                             `/playlist/${continueData.playlist._id}/video/${continueData.video._id}?start=${continueData.video.watchedSeconds}`,
                           )
                         }
-                        className="w-full sm:w-fit mt-5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] font-semibold hover:opacity-90 transition outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+                        className="w-full sm:w-fit mt-5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] font-semibold text-white hover:opacity-90 transition outline-none focus-visible:ring-2 focus-visible:ring-red-400 cursor-pointer"
                       >
                         Resume Learning
                       </button>
@@ -278,7 +278,7 @@ export default function Dashboard() {
                   </div>
                 </div>
               ) : (
-                <p className="text-neutral-500 text-sm">
+                <p className="text-slate-400 dark:text-neutral-500 text-sm">
                   Nothing to continue yet.
                 </p>
               )}
@@ -288,12 +288,12 @@ export default function Dashboard() {
           {/* Recent Playlists */}
           <section className="space-y-3">
             <div className="flex items-center justify-between">
-              <h2 className="text-sm font-semibold">Recent Playlists</h2>
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-white">Recent Playlists</h2>
 
               <button
                 type="button"
                 onClick={() => navigate("/library")}
-                className="text-xs text-red-400 hover:text-red-300 transition outline-none focus-visible:underline"
+                className="text-xs text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium transition outline-none focus-visible:underline cursor-pointer"
               >
                 See All →
               </button>
