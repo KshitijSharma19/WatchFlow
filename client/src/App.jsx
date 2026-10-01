@@ -12,6 +12,8 @@ import Library from "./pages/Library";
 import PlaylistDetails from "./pages/PlaylistDetails";
 import PlaylistPlayer from "./pages/PlaylistPlayer";
 import Settings from "./pages/Settings";
+import SheetsPage from "./pages/Sheets";
+import SheetDetailPage from "./pages/SheetDetail";
 
 import ProtectedRoute from "./components/common/ProtectedRoute";
 
@@ -46,6 +48,8 @@ export default function App() {
         <Route path="/login" element={<AuthPage />} />
         <Route path="/signup" element={<AuthPage />} />
         <Route path="/auth/callback" element={<AuthPage />} />
+        <Route path="/sheets" element={<SheetsPage />} />
+        <Route path="/sheets/:sheetId" element={<SheetDetailPage />} />
 
         {PROTECTED_ROUTES.map(({ path, element }) => (
           <Route
