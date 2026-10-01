@@ -1,6 +1,28 @@
+import { useEffect, useRef } from "react";
 import { X, ExternalLink } from "lucide-react";
+import api from "../../api/axios";
 
 export default function VideoModal({ problem, isOpen, onClose }) {
+  const watchSecondsRef = useRef(0);
+  const loggedStreakRef = useRef(false);
+
+  useEffect(() => {
+    watchSecondsRef.current = 0;
+    loggedStreakRef.current = false;
+
+    if (!isOpen || !problem?.youtubeId) return;
+
+    const timer = setInterval(() => {
+      watchSecondsRef.current += 1;
+      if (!loggedStreakRef.current && watchSecondsRef.current >= 30) {
+        loggedStreakRef.current = true;
+        api.post("/streak/activity", { seconds: 30 }).catch(() => {});
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [isOpen, problem?.youtubeId]);
+
   if (!isOpen || !problem) return null;
 
   const embedUrl = problem.youtubeId

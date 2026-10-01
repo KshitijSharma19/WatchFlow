@@ -88,7 +88,11 @@ exports.updateVideoNotes = async (req, res) => {
 exports.updateVideoProgress = async (req, res) => {
   try {
     const videoId = req.params.id;
-    const { watchedSeconds } = req.body;
+    const {
+      watchedSeconds,
+      sessionSeconds = 0,
+      forceStreak = false,
+    } = req.body;
 
     if (typeof watchedSeconds !== "number" || watchedSeconds < 0) {
       return res.status(400).json({
@@ -129,10 +133,28 @@ exports.updateVideoProgress = async (req, res) => {
     }
 
     const isNowCompleted = !wasCompleted && video.completed;
-    const secondsDelta = Math.max(0, video.watchedSeconds - previousWatchedSeconds);
+    const secondsDelta = Math.max(
+      0,
+      video.watchedSeconds - previousWatchedSeconds,
+    );
 
-    if (secondsDelta > 0 || isNowCompleted) {
-      await updateDailyActivity(req.user.id, secondsDelta, isNowCompleted);
+    // Any 30s playback, 30s reached in video, forceStreak, or positive watch delta
+    const effectiveSeconds = Math.max(secondsDelta, sessionSeconds);
+
+    if (
+      forceStreak ||
+      watchedSeconds >= 30 ||
+      effectiveSeconds >= 30 ||
+      isNowCompleted
+    ) {
+      // 30 seconds makes it count as a streak for that day
+      await updateDailyActivity(
+        req.user.id,
+        Math.max(30, effectiveSeconds),
+        isNowCompleted,
+      );
+    } else if (effectiveSeconds > 0) {
+      await updateDailyActivity(req.user.id, effectiveSeconds, isNowCompleted);
     }
 
     await video.save();

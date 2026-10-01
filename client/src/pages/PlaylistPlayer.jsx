@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import PlayerShell from "../components/layout/PlayerShell";
 import api from "../api/axios";
@@ -29,9 +29,18 @@ export default function PlaylistPlayer() {
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [player, setPlayer] = useState(null);
 
+  const playedSecondsRef = useRef(0);
+  const hasTriggeredStreakRef = useRef(false);
+
   const currentVideo = useMemo(() => {
     return videos.find((video) => video._id === videoId) || videos[0];
   }, [videos, videoId]);
+
+  // Reset playback seconds when switching videos
+  useEffect(() => {
+    playedSecondsRef.current = 0;
+    hasTriggeredStreakRef.current = false;
+  }, [currentVideo?._id]);
 
   useEffect(() => {
     if (!playlist || !currentVideo) return;
@@ -67,47 +76,114 @@ export default function PlaylistPlayer() {
     init();
   }, [fetchPlaylist]);
 
-  const saveProgress = useCallback(async () => {
-    if (!player || !currentVideo) return;
+  const saveProgress = useCallback(
+    async (overrideWatchedSeconds, customSessionSeconds, isStreakTrigger = false) => {
+      if (!player || !currentVideo) return;
 
-    try {
-      const watchedSeconds = Math.floor(player.getCurrentTime());
+      try {
+        const currentTime =
+          typeof overrideWatchedSeconds === "number"
+            ? overrideWatchedSeconds
+            : Math.floor(player.getCurrentTime?.() || 0);
 
-      await api.patch(`/videos/${currentVideo._id}/progress`, {
-        watchedSeconds,
-      });
+        const sessionSecs =
+          typeof customSessionSeconds === "number"
+            ? customSessionSeconds
+            : playedSecondsRef.current;
 
-      const progressPercent = Math.min(
-        100,
-        Math.round((watchedSeconds / currentVideo.durationInSeconds) * 100),
-      );
+        await api.patch(`/videos/${currentVideo._id}/progress`, {
+          watchedSeconds: currentTime,
+          sessionSeconds: sessionSecs,
+          forceStreak: isStreakTrigger,
+        });
 
-      setVideos((prev) =>
-        prev.map((video) =>
-          video._id === currentVideo._id
-            ? {
-                ...video,
-                watchedSeconds,
-                progressPercent,
-                completed: progressPercent >= 95,
-              }
-            : video,
-        ),
-      );
-    } catch (error) {
-      console.error(
-        "[PlaylistPlayer] Save Progress Error:",
-        error.message || error,
-      );
-    }
-  }, [player, currentVideo]);
+        const progressPercent = Math.min(
+          100,
+          Math.round(
+            (currentTime / (currentVideo.durationInSeconds || 1)) * 100,
+          ),
+        );
 
+        setVideos((prev) =>
+          prev.map((video) =>
+            video._id === currentVideo._id
+              ? {
+                  ...video,
+                  watchedSeconds: currentTime,
+                  progressPercent,
+                  completed: progressPercent >= 95,
+                }
+              : video,
+          ),
+        );
+      } catch (error) {
+        console.error(
+          "[PlaylistPlayer] Save Progress Error:",
+          error.message || error,
+        );
+      }
+    },
+    [player, currentVideo],
+  );
+
+  // High-frequency 1s playback monitor:
+  // Detects when user has played 30s in this session or video reaches 30s, and INSTANTLY triggers streak & activity!
   useEffect(() => {
     if (!player) return;
 
-    const interval = setInterval(saveProgress, 10000);
+    const timer = setInterval(() => {
+      try {
+        const state =
+          typeof player.getPlayerState === "function"
+            ? player.getPlayerState()
+            : -1;
+        // YouTube PlayerState: 1 is PLAYING
+        if (state === 1) {
+          playedSecondsRef.current += 1;
+          const currentTime = Math.floor(player.getCurrentTime?.() || 0);
+
+          // Once 30 seconds of video playback reached, trigger streak IMMEDIATELY
+          if (
+            !hasTriggeredStreakRef.current &&
+            (playedSecondsRef.current >= 30 || currentTime >= 30)
+          ) {
+            hasTriggeredStreakRef.current = true;
+            saveProgress(currentTime, playedSecondsRef.current, true);
+          }
+        }
+      } catch (e) {
+        // Player might still be initializing
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [player, saveProgress]);
+
+  // Periodic 10s auto-save
+  useEffect(() => {
+    if (!player) return;
+
+    const interval = setInterval(() => {
+      try {
+        const currentTime = Math.floor(player.getCurrentTime?.() || 0);
+        saveProgress(currentTime, playedSecondsRef.current, false);
+      } catch (e) {}
+    }, 10000);
+
     return () => clearInterval(interval);
   }, [player, saveProgress]);
+
+  // Save on unmount / navigation
+  useEffect(() => {
+    return () => {
+      if (player && currentVideo) {
+        try {
+          const currentTime = Math.floor(player.getCurrentTime?.() || 0);
+          saveProgress(currentTime, playedSecondsRef.current, false);
+        } catch (e) {}
+      }
+    };
+  }, [player, currentVideo, saveProgress]);
 
   const handleVideoSelect = useCallback(
     (targetVideoId) => {
@@ -129,6 +205,22 @@ export default function PlaylistPlayer() {
   const handlePlayerReady = useCallback((ytPlayerInstance) => {
     setPlayer(ytPlayerInstance);
   }, []);
+
+  const handleStateChange = useCallback(
+    (event) => {
+      // If video ends, trigger progress save with 100% completion
+      if (event.data === 0) {
+        if (player && currentVideo) {
+          saveProgress(
+            currentVideo.durationInSeconds || 0,
+            playedSecondsRef.current,
+            true,
+          );
+        }
+      }
+    },
+    [player, currentVideo, saveProgress],
+  );
 
   if (loading) {
     return (
@@ -152,6 +244,7 @@ export default function PlaylistPlayer() {
                 videoId={currentVideo?.ytVideoId}
                 startTime={startTime}
                 onPlayerReady={handlePlayerReady}
+                onStateChange={handleStateChange}
               />
             </div>
 

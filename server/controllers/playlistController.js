@@ -278,6 +278,7 @@ exports.getUserPlaylists = async (req, res) => {
           ...playlist.toObject(),
           thumbnailUrl,
           ...stats,
+          videos,
         };
       }),
     );

@@ -25,7 +25,11 @@ export default function SheetDetailPage() {
   const navigate = useNavigate();
 
   const sheet = useMemo(() => {
-    return SHEETS_DATA.find((s) => s.id === sheetId) || SHEETS_DATA[0];
+    return (
+      SHEETS_DATA.find(
+        (s) => s.id === sheetId || (sheetId === "leetcode-75" && s.id === "blind-75")
+      ) || SHEETS_DATA[0]
+    );
   }, [sheetId]);
 
   // Local storage state for solved, starred, custom video links, and notes
@@ -312,6 +316,7 @@ export default function SheetDetailPage() {
                     const isStarred = !!starredMap[problem.id];
                     const hasNote = !!notesMap[problem.id];
                     const hasCustomVideo = !!customVideoMap[problem.id];
+                    const hasPlayableVideo = hasCustomVideo || (problem.hasVideo && !!problem.youtubeId);
 
                     return (
                       <tr
@@ -401,19 +406,25 @@ export default function SheetDetailPage() {
                         {/* Video Column */}
                         <td className="py-3.5 px-4 text-center">
                           <div className="inline-flex items-center gap-1.5">
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const activeProb = hasCustomVideo
-                                  ? { ...problem, youtubeId: customVideoMap[problem.id] }
-                                  : problem;
-                                setActiveVideoProblem(activeProb);
-                              }}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 border border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 text-xs font-medium transition cursor-pointer"
-                            >
-                              <Play className="w-3 h-3 text-[#E04D4D] fill-[#E04D4D]" />
-                              <span>Watch</span>
-                            </button>
+                            {hasPlayableVideo ? (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const activeProb = hasCustomVideo
+                                    ? { ...problem, youtubeId: customVideoMap[problem.id] }
+                                    : problem;
+                                  setActiveVideoProblem(activeProb);
+                                }}
+                                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 border border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 text-xs font-medium transition cursor-pointer"
+                              >
+                                <Play className="w-3 h-3 text-[#E04D4D] fill-[#E04D4D]" />
+                                <span>Watch</span>
+                              </button>
+                            ) : (
+                              <span className="text-xs text-slate-400 dark:text-neutral-600 px-2 select-none">
+                                —
+                              </span>
+                            )}
 
                             <button
                               type="button"

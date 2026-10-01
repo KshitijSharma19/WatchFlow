@@ -21,11 +21,16 @@ api.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem("token");
       const currentPath = window.location.pathname;
-      if (
-        currentPath !== "/login" &&
-        currentPath !== "/signup" &&
-        currentPath !== "/"
-      ) {
+      const protectedPrefixes = [
+        "/dashboard",
+        "/library",
+        "/settings",
+        "/playlist",
+      ];
+      const isProtected = protectedPrefixes.some((p) =>
+        currentPath.startsWith(p)
+      );
+      if (isProtected) {
         window.location.href = "/login";
       }
     }

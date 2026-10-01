@@ -54,7 +54,7 @@ export default function AuthPage() {
         try {
           const response = await api.post("/auth/github", { code });
           if (response.data?.token) {
-            login(response.data.token);
+            login(response.data.token, response.data.user);
             navigate("/dashboard", { replace: true });
           } else {
             setError("Failed to retrieve authentication token from GitHub");
@@ -116,8 +116,9 @@ export default function AuthPage() {
     try {
       const response = await api.post(authConfig.endpoint, authConfig.payload);
       const token = response.data.token;
+      const user = response.data.user;
 
-      login(token);
+      login(token, user);
       navigate("/dashboard");
     } catch (err) {
       setError(

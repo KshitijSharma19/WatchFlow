@@ -12,6 +12,7 @@ const settingsRoutes = require("./routes/settingsRoutes");
 const streakRoutes = require("./routes/streakRoutes");
 const videoRoutes = require("./routes/videoRoutes");
 const noteRoutes = require("./routes/noteRoutes");
+const roadmapRoutes = require("./routes/roadmapRoutes");
 
 const app = express();
 
@@ -33,6 +34,7 @@ app.use("/api/playlists", playlistRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/streak", streakRoutes);
 app.use("/api/videos", videoRoutes);
+app.use("/api/roadmap", roadmapRoutes);
 app.use("/api", noteRoutes);
 
 // Fallback 404 handler

@@ -59,7 +59,7 @@ export default function SheetsPage() {
 
             <p className="text-slate-600 dark:text-neutral-400 text-sm sm:text-base lg:text-lg max-w-xl leading-relaxed">
               Work through a topic end to end. Every problem links straight to LeetCode,
-              opens its clean solution in C++, Java, and Python, and plays the video walkthrough.
+              opens its clean solution in C++, Java, Python and plays the video walkthrough.
             </p>
 
             <div className="flex items-center gap-3.5 pt-2 flex-wrap">
@@ -130,7 +130,7 @@ export default function SheetsPage() {
                 Read it three ways
               </h3>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-neutral-400 leading-relaxed">
-                The solution in C++, Java and Python, with the approach and its complexity in one line.
+                The solution in C++, Java and Python with the approach and its complexity in one line.
               </p>
             </div>
 

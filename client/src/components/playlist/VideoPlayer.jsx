@@ -1,7 +1,7 @@
 import { memo } from "react";
 import YouTube from "react-youtube";
 
-const VideoPlayer = memo(({ videoId, startTime, onPlayerReady }) => {
+const VideoPlayer = memo(({ videoId, startTime, onPlayerReady, onStateChange }) => {
   return (
     <div className="w-full aspect-video bg-black border border-neutral-800/60 md:rounded-xl overflow-hidden shadow-2xl shrink-0">
       <YouTube
@@ -24,6 +24,7 @@ const VideoPlayer = memo(({ videoId, startTime, onPlayerReady }) => {
             ytPlayer.seekTo(startTime, true);
           }
         }}
+        onStateChange={onStateChange}
       />
     </div>
   );

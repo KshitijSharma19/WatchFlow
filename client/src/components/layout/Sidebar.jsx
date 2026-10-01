@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Home, ListMusic, Settings, X, Play, FolderOpen, Code2 } from "lucide-react";
+import { Home, ListMusic, Settings, X, Play, FolderOpen, Code2, Compass } from "lucide-react";
 import { NavLink, useLocation, Link } from "react-router-dom";
 import {
   getRecentPlaylist,
@@ -26,6 +26,11 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       name: "Practice Sheets",
       icon: Code2,
       path: "/sheets",
+    },
+    {
+      name: "Roadmap",
+      icon: Compass,
+      path: "/roadmap",
     },
   ];
 
@@ -60,6 +65,10 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   const isItemActive = (item) => {
     if (item.name === "Practice Sheets") {
       return location.pathname.startsWith("/sheets");
+    }
+
+    if (item.name === "Roadmap") {
+      return location.pathname.startsWith("/roadmap");
     }
 
     if (item.name === "Player") {

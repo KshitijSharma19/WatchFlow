@@ -2,6 +2,16 @@ import { useState, useEffect, useRef, useMemo } from "react";
 
 const WEEK_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
+const formatLocalDate = (date) => {
+  try {
+    return new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Asia/Kolkata",
+    }).format(date);
+  } catch {
+    return date.toLocaleDateString("en-CA");
+  }
+};
+
 export default function Heatmap({ heatmap = {}, days = 365 }) {
   const scrollContainerRef = useRef(null);
   const [tooltip, setTooltip] = useState(null);
@@ -18,7 +28,7 @@ export default function Heatmap({ heatmap = {}, days = 365 }) {
     for (let i = days - 1; i >= 0; i--) {
       const date = new Date();
       date.setDate(today.getDate() - i);
-      const key = date.toLocaleDateString("en-CA");
+      const key = formatLocalDate(date);
 
       allDays.push({
         date,
@@ -79,14 +89,17 @@ export default function Heatmap({ heatmap = {}, days = 365 }) {
     }
   }, [weeks.length]);
 
+  // Color logic: only 30 seconds (1+ min studied) or 1 video counts as an active streak day!
   const getColor = (activity) => {
     const videos = activity?.videosCompleted ?? 0;
+    const minutes = activity?.minutesStudied ?? 0;
 
-    if (videos === 0) return "bg-slate-200 dark:bg-neutral-800";
-    if (videos === 1) return "bg-red-500/25";
-    if (videos <= 3) return "bg-red-500/60";
+    if (videos === 0 && minutes === 0) return "bg-slate-200 dark:bg-neutral-800";
+    if (videos >= 4 || minutes >= 60) return "bg-red-500";
+    if (videos >= 2 || minutes >= 30) return "bg-red-500/60";
 
-    return "bg-red-500";
+    // 30 seconds in video (recorded as 1+ mins) makes it count as active streak
+    return "bg-red-500/35";
   };
 
   // Dynamically compute safety positioning coordinates relative to viewport bounds
@@ -205,15 +218,21 @@ export default function Heatmap({ heatmap = {}, days = 365 }) {
         <span>Less</span>
         <div className="flex items-center gap-1">
           <div
-            title="0 videos"
+            title="0 activity"
             className="w-3.5 h-3.5 rounded bg-slate-200 dark:bg-neutral-800"
           />
-          <div title="1 video" className="w-3.5 h-3.5 rounded bg-red-500/25" />
           <div
-            title="2-3 videos"
+            title="Active (30s+ / 1+ min or 1 video)"
+            className="w-3.5 h-3.5 rounded bg-red-500/35"
+          />
+          <div
+            title="Moderate (30m+ or 2-3 videos)"
             className="w-3.5 h-3.5 rounded bg-red-500/60"
           />
-          <div title="4+ videos" className="w-3.5 h-3.5 rounded bg-red-500" />
+          <div
+            title="High (60m+ or 4+ videos)"
+            className="w-3.5 h-3.5 rounded bg-red-500"
+          />
         </div>
         <span>More</span>
       </div>
@@ -231,10 +250,10 @@ export default function Heatmap({ heatmap = {}, days = 365 }) {
             })}
           </p>
           <p className="text-sm text-slate-600 dark:text-neutral-400 mt-2 flex items-center gap-1.5">
-            <span>🎬</span> {tooltip.day.activity.videosCompleted} videos
+            <span>🎬</span> {tooltip.day.activity.videosCompleted || 0} video{tooltip.day.activity.videosCompleted === 1 ? "" : "s"} completed
           </p>
           <p className="text-sm text-slate-600 dark:text-neutral-400 flex items-center gap-1.5">
-            <span>⏱</span> {tooltip.day.activity.minutesStudied} mins
+            <span>⏱</span> {tooltip.day.activity.minutesStudied || 0} min{tooltip.day.activity.minutesStudied === 1 ? "" : "s"} studied
           </p>
         </div>
       )}

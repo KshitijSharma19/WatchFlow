@@ -1,7 +1,26 @@
 const DailyActivity = require("../models/DailyActivity");
+const updateDailyActivity = require("../utils/updateDailyActivity");
 const { getLocalDateString } = require("../utils/dateUtils");
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+exports.logActivity = async (req, res) => {
+  try {
+    const { seconds = 30 } = req.body;
+    const activity = await updateDailyActivity(req.user.id, seconds, false);
+    res.status(200).json({
+      success: true,
+      message: "Activity logged",
+      activity,
+    });
+  } catch (error) {
+    console.error("[Log Activity]", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Failed to log activity",
+    });
+  }
+};
 
 exports.getStreakData = async (req, res) => {
   try {
@@ -14,10 +33,12 @@ exports.getStreakData = async (req, res) => {
     const dateMap = Object.create(null);
 
     for (const activity of activities) {
-      dateMap[activity.date] = {
-        videosCompleted: activity.videosCompleted || 0,
-        minutesStudied: activity.minutesStudied || 0,
-      };
+      if ((activity.minutesStudied || 0) > 0 || (activity.videosCompleted || 0) > 0) {
+        dateMap[activity.date] = {
+          videosCompleted: activity.videosCompleted || 0,
+          minutesStudied: activity.minutesStudied || 0,
+        };
+      }
     }
 
     const totalMinutes = activities.reduce(
