@@ -45,6 +45,7 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<AuthPage />} />
         <Route path="/signup" element={<AuthPage />} />
+        <Route path="/auth/callback" element={<AuthPage />} />
 
         {PROTECTED_ROUTES.map(({ path, element }) => (
           <Route
