@@ -48,7 +48,7 @@ export default function RoadmapPlayerModal({
         {/* Video Player (Embedded directly in WatchFlow) */}
         <div className="relative w-full aspect-video bg-black">
           <iframe
-            src={`https://www.youtube.com/embed/${ytVideoId}?autoplay=1&rel=0&modestbranding=1`}
+            src={`https://www.youtube.com/embed/${ytVideoId}?autoplay=1&rel=0&modestbranding=1${video.startSeconds ? `&start=${video.startSeconds}` : ""}`}
             title={video.title}
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
             allowFullScreen

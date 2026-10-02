@@ -62,30 +62,36 @@ export default function RoadmapPage() {
 
   // Video Roadmap state
   const [videoPace, setVideoPace] = useState("1 hour a day");
+  const [customVideoHours, setCustomVideoHours] = useState("4");
   const [userPlaylists, setUserPlaylists] = useState([]);
   const [loadingPlaylists, setLoadingPlaylists] = useState(false);
   const [videoSourceTab, setVideoSourceTab] = useState("library"); // "library" | "presets"
   const [isBuildingVideoRoadmap, setIsBuildingVideoRoadmap] = useState(false);
 
+  // Active daily hours based on selected pace or custom input
+  const activePaceHours = useMemo(() => {
+    if (videoPace === "custom") {
+      return Math.max(0.5, parseFloat(customVideoHours) || 4);
+    }
+    if (videoPace.includes("30")) return 0.5;
+    if (videoPace.includes("2")) return 2;
+    return 1;
+  }, [videoPace, customVideoHours]);
+
   // In-app video player modal for preset courses
   const [modalVideo, setModalVideo] = useState(null);
 
-  // Active generated roadmap stored in state and localStorage
-  const [activeRoadmap, setActiveRoadmap] = useState(null);
-  const [expandedDays, setExpandedDays] = useState({ 1: true });
-
-  // Load saved roadmap from localStorage on mount
-  useEffect(() => {
+  // Active generated roadmap stored in state and localStorage (initialized synchronously from localStorage to eliminate flicker)
+  const [activeRoadmap, setActiveRoadmap] = useState(() => {
     try {
       const saved = localStorage.getItem("watchflow_active_roadmap");
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        setActiveRoadmap(parsed);
-      }
+      return saved ? JSON.parse(saved) : null;
     } catch (e) {
       console.error("Failed to load saved roadmap", e);
+      return null;
     }
-  }, []);
+  });
+  const [expandedDays, setExpandedDays] = useState({ 1: true });
 
   // Fetch user playlists from library for video roadmap
   useEffect(() => {
@@ -195,9 +201,14 @@ export default function RoadmapPage() {
         }
       }
 
+      const effectivePace =
+        videoPace === "custom"
+          ? `${parseFloat(customVideoHours) || 4} hours a day`
+          : videoPace;
+
       const roadmap = generateVideoRoadmap({
         playlist: targetPlaylist,
-        timePerDay: videoPace,
+        timePerDay: effectivePace,
       });
 
       saveRoadmapState(roadmap);
@@ -212,7 +223,8 @@ export default function RoadmapPage() {
   const handleWatchVideo = (vid) => {
     // If it's a saved library playlist, navigate to the WatchFlow player route
     if (vid.isLibrary && vid.playlistId && vid.videoId) {
-      navigate(`/playlist/${vid.playlistId}/video/${vid.videoId}`);
+      const timeParam = vid.startSeconds ? `?start=${vid.startSeconds}&t=${vid.startSeconds}` : "";
+      navigate(`/playlist/${vid.playlistId}/video/${vid.videoId}${timeParam}`);
     } else {
       // For preset courses, open in the in-app player modal right inside WatchFlow
       setModalVideo(vid);
@@ -271,7 +283,7 @@ export default function RoadmapPage() {
         {/* VIEW 1: ACTIVE ROADMAP INTERACTIVE TIMELINE VIEW */}
         {/* ============================================================== */}
         {viewingRoadmap && activeRoadmap ? (
-          <div className="space-y-8 animate-in fade-in duration-300">
+          <div className="space-y-8">
             {/* Top Navigation & Action Controls */}
             <div className="flex items-center justify-between flex-wrap gap-4 pb-4 border-b border-slate-200 dark:border-neutral-900">
               <button
@@ -362,7 +374,11 @@ export default function RoadmapPage() {
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Clock className="w-4 h-4 text-[#E04D4D]" />
-                  <span>{activeRoadmap.timePerDay || "1 hour"}/day</span>
+                  <span>
+                    {activeRoadmap.timePerDay?.includes("day")
+                      ? activeRoadmap.timePerDay
+                      : `${activeRoadmap.timePerDay || "1 hour"}/day`}
+                  </span>
                 </div>
                 {activeRoadmap.goal && (
                   <div className="flex items-center gap-1.5">
@@ -398,7 +414,7 @@ export default function RoadmapPage() {
                 return (
                   <div
                     key={dayItem.day}
-                    className={`rounded-2xl border transition-all duration-200 overflow-hidden ${
+                    className={`rounded-2xl border transition-colors duration-150 overflow-hidden ${
                       isDayDone
                         ? "bg-slate-50/60 dark:bg-neutral-950/40 border-slate-200 dark:border-neutral-900 opacity-80"
                         : "bg-white dark:bg-neutral-950/80 border-slate-200 dark:border-neutral-800 shadow-xs"
@@ -650,7 +666,7 @@ export default function RoadmapPage() {
           /* ============================================================== */
           /* VIEW 2: ROADMAP BUILDER FORM (MATCHING REFERENCE SCREENSHOTS) */
           /* ============================================================== */
-          <div className="space-y-10 animate-in fade-in duration-300">
+          <div className="space-y-10">
             {/* Hero Header matching Screenshot 1 */}
             <div className="space-y-3">
               <span className="text-xs font-bold uppercase tracking-wider text-[#E04D4D]">
@@ -994,7 +1010,7 @@ export default function RoadmapPage() {
                     A full video series, split into days for you. No AI involved, the order is the author's, we just pace it.
                   </p>
 
-                  <div className="flex items-center gap-2 pt-2">
+                  <div className="flex items-center gap-2 pt-2 flex-wrap">
                     {["30 mins a day", "1 hour a day", "2 hours a day"].map((pace) => (
                       <button
                         key={pace}
@@ -1009,18 +1025,48 @@ export default function RoadmapPage() {
                         {pace}
                       </button>
                     ))}
+                    <button
+                      type="button"
+                      onClick={() => setVideoPace("custom")}
+                      className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer ${
+                        videoPace === "custom"
+                          ? "bg-red-500/10 border border-[#E04D4D] text-[#E04D4D]"
+                          : "bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 hover:border-slate-300 dark:hover:border-neutral-700"
+                      }`}
+                    >
+                      Custom hours
+                    </button>
                   </div>
+
+                  {videoPace === "custom" && (
+                    <div className="flex items-center gap-2.5 pt-2 text-xs sm:text-sm animate-in fade-in duration-150">
+                      <span className="text-slate-600 dark:text-neutral-400 font-medium">Daily study target:</span>
+                      <div className="relative w-28">
+                        <input
+                          type="number"
+                          min="0.5"
+                          max="16"
+                          step="0.5"
+                          value={customVideoHours}
+                          onChange={(e) => setCustomVideoHours(e.target.value)}
+                          className="w-full px-3 py-1.5 rounded-xl bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-slate-900 dark:text-white font-semibold focus:outline-none focus:border-[#E04D4D] focus:ring-1 focus:ring-[#E04D4D] shadow-xs"
+                          placeholder="e.g. 4"
+                        />
+                      </div>
+                      <span className="text-slate-600 dark:text-neutral-400 font-medium">hours a day</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* Source switcher: User's Library Playlists vs Preset Courses */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2.5">
                   <button
                     type="button"
                     onClick={() => setVideoSourceTab("library")}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
                       videoSourceTab === "library"
-                        ? "bg-[#E04D4D] text-white"
-                        : "bg-slate-100 dark:bg-neutral-900 text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white"
+                        ? "bg-red-500/10 border border-[#E04D4D] text-[#E04D4D]"
+                        : "bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 hover:border-slate-300 dark:hover:border-neutral-700"
                     }`}
                   >
                     From Your Library ({userPlaylists.length})
@@ -1029,10 +1075,10 @@ export default function RoadmapPage() {
                   <button
                     type="button"
                     onClick={() => setVideoSourceTab("presets")}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition cursor-pointer ${
                       videoSourceTab === "presets"
-                        ? "bg-[#E04D4D] text-white"
-                        : "bg-slate-100 dark:bg-neutral-900 text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white"
+                        ? "bg-red-500/10 border border-[#E04D4D] text-[#E04D4D]"
+                        : "bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 hover:border-slate-300 dark:hover:border-neutral-700"
                     }`}
                   >
                     Popular YouTube Series ({PRESET_VIDEO_COURSES.length})
@@ -1069,16 +1115,10 @@ export default function RoadmapPage() {
                       </div>
                     ) : (
                       userPlaylists.map((pl) => {
-                        // Calculate days based on pace
-                        const hours = videoPace.includes("30")
-                          ? 0.5
-                          : videoPace.includes("2")
-                          ? 2
-                          : 1;
                         const totalHours = pl.totalDuration
                           ? Math.round(pl.totalDuration / 3600)
                           : Math.round((pl.videos?.length || 10) * 0.4);
-                        const daysRequired = Math.max(1, Math.ceil(totalHours / hours));
+                        const daysRequired = Math.max(1, Math.ceil(totalHours / activePaceHours));
 
                         return (
                           <div
@@ -1100,7 +1140,7 @@ export default function RoadmapPage() {
                                   {daysRequired} days
                                 </span>
                                 <span className="text-[10px] text-slate-400 dark:text-neutral-500">
-                                  at this pace
+                                  at {activePaceHours}h/day
                                 </span>
                               </div>
 
@@ -1120,14 +1160,9 @@ export default function RoadmapPage() {
                   ) : (
                     // PRESET POPULAR COURSES (Featuring multiple creators)
                     PRESET_VIDEO_COURSES.map((course) => {
-                      const hours = videoPace.includes("30")
-                        ? 0.5
-                        : videoPace.includes("2")
-                        ? 2
-                        : 1;
                       const daysRequired = Math.max(
                         1,
-                        Math.ceil(course.approxHours / hours)
+                        Math.ceil(course.approxHours / activePaceHours)
                       );
 
                       return (
@@ -1161,7 +1196,7 @@ export default function RoadmapPage() {
                                 {daysRequired} days
                               </span>
                               <span className="text-[10px] text-slate-400 dark:text-neutral-500">
-                                at this pace
+                                at {activePaceHours}h/day
                               </span>
                             </div>
 

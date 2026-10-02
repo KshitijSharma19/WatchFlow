@@ -5,14 +5,14 @@ const VideoPlayer = memo(({ videoId, startTime, onPlayerReady, onStateChange }) 
   return (
     <div className="w-full aspect-video bg-black border border-neutral-800/60 md:rounded-xl overflow-hidden shadow-2xl shrink-0">
       <YouTube
-        key={videoId}
+        key={`${videoId}_${startTime || 0}`}
         videoId={videoId}
         opts={{
           width: "100%",
           height: "100%",
           playerVars: {
             autoplay: 1,
-            start: startTime,
+            start: startTime || 0,
           },
         }}
         className="w-full h-full"

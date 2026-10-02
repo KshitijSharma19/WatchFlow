@@ -317,18 +317,54 @@ export function generateDsaRoadmap({
 }
 
 /**
+ * Format duration in seconds to HH:MM:SS or MM:SS
+ */
+function formatVideoTimestamp(secs) {
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = Math.floor(secs % 60);
+  if (h > 0) {
+    return `${h}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  }
+  return `${m}:${s.toString().padStart(2, "0")}`;
+}
+
+/**
+ * Parse timePerDay string (e.g. "30 mins a day", "1 hour a day", "2 hours a day", "4 hours a day") to seconds
+ */
+function parseDailyPaceToSeconds(timePerDay) {
+  if (!timePerDay) return 3600;
+  const str = String(timePerDay).toLowerCase().trim();
+  if (str.includes("30 min")) return 1800;
+  if (str.includes("45 min")) return 2700;
+
+  const hourMatch = str.match(/(\d+(\.\d+)?)\s*(hr|hour)/);
+  if (hourMatch) {
+    return Math.round(parseFloat(hourMatch[1]) * 3600);
+  }
+
+  const numOnly = str.match(/^(\d+(\.\d+)?)$/);
+  if (numOnly) {
+    return Math.round(parseFloat(numOnly[1]) * 3600);
+  }
+
+  return 3600;
+}
+
+/**
  * Generate Video Roadmap based on user's selected library playlist or preset
+ * Supports custom daily hours, packs multiple short videos, and segments long videos (e.g. 7.5h into parts)
  */
 export function generateVideoRoadmap({
   playlist,
-  timePerDay = "1 hour",
+  timePerDay = "1 hour a day",
 }) {
   if (!playlist) return null;
 
-  // Daily target in seconds: 30min -> 1800s, 1hr -> 3600s, 2hr+ -> 7200s
-  let targetSecondsPerDay = 3600;
-  if (timePerDay.includes("30")) targetSecondsPerDay = 1800;
-  else if (timePerDay.includes("2")) targetSecondsPerDay = 7200;
+  const targetSeconds = parseDailyPaceToSeconds(timePerDay);
+  // Allow +- 20-25 mins tolerance (e.g. 4h 20m video fits into 4h target day without breaking)
+  const toleranceSeconds = Math.min(1500, Math.max(900, Math.round(targetSeconds * 0.15)));
+  const maxDaySeconds = targetSeconds + toleranceSeconds;
 
   const rawVideos = playlist.videos || [];
   const days = [];
@@ -336,46 +372,140 @@ export function generateVideoRoadmap({
   let currentDayDuration = 0;
   let dayCounter = 1;
 
+  const sealDay = () => {
+    if (currentDayVideos.length === 0) return;
+    const minutes = Math.round(currentDayDuration / 60);
+    const primaryTitle = currentDayVideos[0]?.title || `Lesson Series`;
+    days.push({
+      day: dayCounter,
+      title: `Day ${dayCounter}: ${primaryTitle.substring(0, 52)}${primaryTitle.length > 52 ? "..." : ""}`,
+      durationMinutes: minutes,
+      videos: [...currentDayVideos],
+      note: `Watch today's assigned video lessons (~${(minutes / 60).toFixed(1)} hrs) and practice hands-on code.`,
+    });
+    dayCounter++;
+    currentDayVideos = [];
+    currentDayDuration = 0;
+  };
+
   rawVideos.forEach((video, idx) => {
-    // Read duration accurately supporting all schema variations
     const videoDuration =
       video.durationInSeconds ||
       video.durationSeconds ||
       video.duration ||
-      Math.floor(Math.random() * 600 + 1500); // 25-35 min realistic fallback
+      Math.floor(Math.random() * 600 + 1500);
 
-    currentDayVideos.push({
-      id: video._id || video.id || `v-${idx}`,
-      videoId: video._id || video.id || `v-${idx}`,
-      ytVideoId: video.ytVideoId || video.videoId || video.id || "vz1RlUy573o",
-      title: video.title || `Lesson ${idx + 1}`,
-      durationSeconds: videoDuration,
-      playlistId: playlist._id || playlist.id,
-      isLibrary: !!playlist._id, // flag whether it's stored in user MongoDB library
-    });
-    currentDayDuration += videoDuration;
+    const baseVideoId = video._id || video.id || `v-${idx}`;
+    const ytVideoId = video.ytVideoId || video.videoId || video.id || "vz1RlUy573o";
+    const baseTitle = video.title || `Lesson ${idx + 1}`;
+    const isLibrary = !!playlist._id;
 
-    // When daily quota is reached (or at last video), seal the day
-    if (
-      currentDayDuration >= targetSecondsPerDay ||
-      idx === rawVideos.length - 1
-    ) {
-      const minutes = Math.round(currentDayDuration / 60);
-      days.push({
-        day: dayCounter,
-        title: `Day ${dayCounter}: ${currentDayVideos[0]?.title.substring(0, 50)}...`,
-        durationMinutes: minutes,
-        videos: [...currentDayVideos],
-        note: `Watch today's assigned video lessons and take notes in the player.`,
-      });
+    let videoRemaining = videoDuration;
+    let videoStartOffset = 0;
+    let partIndex = 1;
 
-      dayCounter++;
-      currentDayVideos = [];
-      currentDayDuration = 0;
+    while (videoRemaining > 0) {
+      const spaceLeft = targetSeconds - currentDayDuration;
+
+      // Brand new day
+      if (currentDayDuration === 0) {
+        // Fits within maxDaySeconds (including the +-20 min tolerance!)
+        if (videoRemaining <= maxDaySeconds) {
+          currentDayVideos.push({
+            id: partIndex > 1 ? `${baseVideoId}-p${partIndex}` : baseVideoId,
+            videoId: baseVideoId,
+            ytVideoId,
+            title: partIndex > 1
+              ? `${baseTitle} [Part ${partIndex}] (${formatVideoTimestamp(videoStartOffset)} - ${formatVideoTimestamp(videoDuration)})`
+              : baseTitle,
+            durationSeconds: videoRemaining,
+            startSeconds: videoStartOffset,
+            endSeconds: videoDuration,
+            playlistId: playlist._id || playlist.id,
+            isLibrary,
+            isSegment: partIndex > 1,
+          });
+          currentDayDuration += videoRemaining;
+          videoRemaining = 0;
+          if (currentDayDuration >= targetSeconds - 900) {
+            sealDay();
+          }
+        } else {
+          // Video is significantly longer than daily budget (e.g. 7.5 hr video with 4 hr target)
+          const chunk = targetSeconds;
+          currentDayVideos.push({
+            id: `${baseVideoId}-p${partIndex}`,
+            videoId: baseVideoId,
+            ytVideoId,
+            title: `${baseTitle} [Part ${partIndex}] (${formatVideoTimestamp(videoStartOffset)} - ${formatVideoTimestamp(videoStartOffset + chunk)})`,
+            durationSeconds: chunk,
+            startSeconds: videoStartOffset,
+            endSeconds: videoStartOffset + chunk,
+            playlistId: playlist._id || playlist.id,
+            isLibrary,
+            isSegment: true,
+          });
+          videoStartOffset += chunk;
+          videoRemaining -= chunk;
+          currentDayDuration += chunk;
+          partIndex++;
+          sealDay();
+        }
+      } else {
+        // Day already has some video(s)
+        if (currentDayDuration + videoRemaining <= maxDaySeconds) {
+          currentDayVideos.push({
+            id: partIndex > 1 ? `${baseVideoId}-p${partIndex}` : baseVideoId,
+            videoId: baseVideoId,
+            ytVideoId,
+            title: partIndex > 1
+              ? `${baseTitle} [Part ${partIndex}] (${formatVideoTimestamp(videoStartOffset)} - ${formatVideoTimestamp(videoDuration)})`
+              : baseTitle,
+            durationSeconds: videoRemaining,
+            startSeconds: videoStartOffset,
+            endSeconds: videoDuration,
+            playlistId: playlist._id || playlist.id,
+            isLibrary,
+            isSegment: partIndex > 1,
+          });
+          currentDayDuration += videoRemaining;
+          videoRemaining = 0;
+          if (currentDayDuration >= targetSeconds - 900) {
+            sealDay();
+          }
+        } else {
+          // Doesn't fit in today without exceeding tolerance
+          if (currentDayDuration >= targetSeconds * 0.7) {
+            // Already finished 70%+ of daily target, start fresh tomorrow
+            sealDay();
+          } else {
+            // Take remaining time for today
+            const chunk = spaceLeft;
+            currentDayVideos.push({
+              id: `${baseVideoId}-p${partIndex}`,
+              videoId: baseVideoId,
+              ytVideoId,
+              title: `${baseTitle} [Part ${partIndex}] (${formatVideoTimestamp(videoStartOffset)} - ${formatVideoTimestamp(videoStartOffset + chunk)})`,
+              durationSeconds: chunk,
+              startSeconds: videoStartOffset,
+              endSeconds: videoStartOffset + chunk,
+              playlistId: playlist._id || playlist.id,
+              isLibrary,
+              isSegment: true,
+            });
+            videoStartOffset += chunk;
+            videoRemaining -= chunk;
+            currentDayDuration += chunk;
+            partIndex++;
+            sealDay();
+          }
+        }
+      }
     }
   });
 
-  // If no videos were present, provide a sensible pacing
+  sealDay();
+
   if (days.length === 0) {
     days.push({
       day: 1,

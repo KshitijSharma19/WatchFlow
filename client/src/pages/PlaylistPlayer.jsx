@@ -18,7 +18,7 @@ export default function PlaylistPlayer() {
   const navigate = useNavigate();
 
   const startTime = useMemo(
-    () => Number(searchParams.get("start") || 0),
+    () => Number(searchParams.get("start") || searchParams.get("t") || 0),
     [searchParams],
   );
 
