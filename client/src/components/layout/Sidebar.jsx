@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Home, ListMusic, Settings, X, Play, FolderOpen, Code2, Compass } from "lucide-react";
+import { Home, ListMusic, Settings, X, Play, FolderOpen, Code2, Compass, BookOpen } from "lucide-react";
 import { NavLink, useLocation, Link } from "react-router-dom";
 import {
   getRecentPlaylist,
@@ -31,6 +31,11 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       name: "Roadmap",
       icon: Compass,
       path: "/roadmap",
+    },
+    {
+      name: "Notes Hub",
+      icon: BookOpen,
+      path: "/notes",
     },
   ];
 
@@ -69,6 +74,10 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
     if (item.name === "Roadmap") {
       return location.pathname.startsWith("/roadmap");
+    }
+
+    if (item.name === "Notes Hub") {
+      return location.pathname.startsWith("/notes");
     }
 
     if (item.name === "Player") {
