@@ -40,7 +40,7 @@ const PlayerInfoCard = memo(
 
         <div className="h-px w-full bg-slate-200 dark:bg-neutral-800/60" />
 
-        <p className="text-slate-600 dark:text-neutral-400 text-xs md:text-sm leading-relaxed whitespace-pre-line">
+        <p className="text-slate-600 dark:text-neutral-400 text-xs md:text-sm leading-relaxed whitespace-pre-line break-words">
           {showFullDesc
             ? currentVideo?.description
             : `${currentVideo?.description?.slice(0, 240) || ""}...`}

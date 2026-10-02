@@ -222,6 +222,46 @@ export default function PlaylistPlayer() {
     [player, currentVideo, saveProgress],
   );
 
+  const leftColumnRef = useRef(null);
+  const activeVideoRef = useRef(null);
+  const [leftHeight, setLeftHeight] = useState(null);
+  const [isLgScreen, setIsLgScreen] = useState(
+    typeof window !== "undefined" ? window.innerWidth >= 1024 : false,
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsLgScreen(window.innerWidth >= 1024);
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (!leftColumnRef.current) return;
+    const updateHeight = () => {
+      if (leftColumnRef.current) {
+        setLeftHeight(leftColumnRef.current.offsetHeight);
+      }
+    };
+    updateHeight();
+
+    const observer = new ResizeObserver(() => {
+      updateHeight();
+    });
+    observer.observe(leftColumnRef.current);
+    return () => observer.disconnect();
+  }, [currentVideo?._id]);
+
+  useEffect(() => {
+    if (activeVideoRef.current) {
+      activeVideoRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }
+  }, [currentVideo?._id]);
+
   if (loading) {
     return (
       <Loader
@@ -236,9 +276,12 @@ export default function PlaylistPlayer() {
     <PlayerShell showBack title={currentVideo?.title || "Now Playing"}>
       {/* Full width wrapper, centered via mx-auto, items-center ensures exact middle alignment */}
       <div className="w-full max-w-[1500px] mx-auto flex-1 flex flex-col items-center px-3 sm:px-6 pb-6 min-h-0 font-sans">
-        <div className="flex flex-col lg:flex-row gap-6 w-full flex-1 min-h-0 justify-center">
+        <div className="flex flex-col lg:flex-row gap-6 w-full flex-1 min-h-0 justify-center items-start">
           {/* LEFT COLUMN: Video Player & Info */}
-          <div className="w-full flex-1 min-w-0 flex flex-col space-y-4 lg:overflow-y-auto lg:pr-2">
+          <div
+            ref={leftColumnRef}
+            className="w-full flex-1 min-w-0 flex flex-col space-y-4"
+          >
             <div className="w-full aspect-video rounded-xl overflow-hidden bg-black shrink-0">
               <VideoPlayer
                 videoId={currentVideo?.ytVideoId}
@@ -261,7 +304,14 @@ export default function PlaylistPlayer() {
           </div>
 
           {/* RIGHT COLUMN: Queue */}
-          <aside className="w-full lg:w-[380px] xl:w-[420px] shrink-0 border border-slate-200 dark:border-neutral-800/80 bg-white dark:bg-neutral-950/90 rounded-xl overflow-hidden flex flex-col lg:min-h-0 shadow-xl">
+          <aside
+            style={
+              isLgScreen && leftHeight
+                ? { height: `${leftHeight}px`, maxHeight: `${leftHeight}px` }
+                : undefined
+            }
+            className="w-full lg:w-[380px] xl:w-[420px] shrink-0 max-h-[520px] lg:max-h-none border border-slate-200 dark:border-neutral-800/80 bg-white dark:bg-neutral-950/90 rounded-xl overflow-hidden flex flex-col shadow-xl"
+          >
             <div className="px-4 py-3.5 bg-slate-50 dark:bg-neutral-900/50 border-b border-slate-200 dark:border-neutral-800 shrink-0">
               <div className="flex items-center justify-between">
                 <h2 className="text-sm font-bold text-slate-900 dark:text-neutral-100">
@@ -276,16 +326,20 @@ export default function PlaylistPlayer() {
               </p>
             </div>
 
-            <div className="lg:flex-1 lg:overflow-y-auto p-2 space-y-1.5">
+            <div className="flex-1 overflow-y-auto p-2 space-y-1.5 min-h-0">
               {videos.map((video, index) => (
-                <QueueVideoCard
+                <div
                   key={video._id}
-                  video={video}
-                  index={index}
-                  isActive={video._id === currentVideo?._id}
-                  onVideoSelect={handleVideoSelect}
-                  onNotesClick={handleNotesOpen}
-                />
+                  ref={video._id === currentVideo?._id ? activeVideoRef : null}
+                >
+                  <QueueVideoCard
+                    video={video}
+                    index={index}
+                    isActive={video._id === currentVideo?._id}
+                    onVideoSelect={handleVideoSelect}
+                    onNotesClick={handleNotesOpen}
+                  />
+                </div>
               ))}
             </div>
           </aside>
