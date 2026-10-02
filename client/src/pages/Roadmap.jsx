@@ -664,10 +664,10 @@ export default function RoadmapPage() {
           </div>
         ) : (
           /* ============================================================== */
-          /* VIEW 2: ROADMAP BUILDER FORM (MATCHING REFERENCE SCREENSHOTS) */
+          /* ROADMAP BUILDER FORM                                           */
           /* ============================================================== */
           <div className="space-y-10">
-            {/* Hero Header matching Screenshot 1 */}
+            {/* Header */}
             <div className="space-y-3">
               <span className="text-xs font-bold uppercase tracking-wider text-[#E04D4D]">
                 roadmap
@@ -729,7 +729,7 @@ export default function RoadmapPage() {
             {/* ============================================================ */}
             {mainMode === "build" && (
               <div className="space-y-8 animate-in fade-in duration-200">
-                {/* 2 Category Selection Cards (Screenshot 1) */}
+                {/* Curriculum & Technology Selection Cards */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {/* Card 1: DSA & Interviews */}
                   <div
@@ -840,7 +840,7 @@ export default function RoadmapPage() {
                   </div>
                 )}
 
-                {/* QUESTION 1: Where are you now? (Screenshot 1) */}
+                {/* Level Assessment */}
                 <div className="space-y-3">
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-neutral-400 block">
                     Where are you now?
@@ -868,7 +868,7 @@ export default function RoadmapPage() {
                   </div>
                 </div>
 
-                {/* QUESTION 2: What are you aiming for? (Screenshot 1) */}
+                {/* Learning Goal */}
                 <div className="space-y-3">
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-neutral-400 block">
                     What are you aiming for?
@@ -895,7 +895,7 @@ export default function RoadmapPage() {
                   </div>
                 </div>
 
-                {/* QUESTION 3: Time per day (Screenshot 3) */}
+                {/* Daily Study Target */}
                 <div className="space-y-3">
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-neutral-400 block">
                     Time per day
@@ -926,7 +926,7 @@ export default function RoadmapPage() {
                   </div>
                 </div>
 
-                {/* QUESTION 4: How long have you got? (Screenshot 3) */}
+                {/* Target Timeline */}
                 <div className="space-y-3">
                   <label className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-neutral-400 block">
                     How long have you got?
@@ -964,7 +964,7 @@ export default function RoadmapPage() {
                   </div>
                 </div>
 
-                {/* Action Trigger Button (Screenshot 3) */}
+                {/* Generation Action */}
                 <div className="pt-4 flex items-center gap-4 flex-wrap">
                   <button
                     type="button"
@@ -997,7 +997,7 @@ export default function RoadmapPage() {
             )}
 
             {/* ============================================================ */}
-            {/* SUB-MODE B: VIDEO ROADMAP (SCREENSHOT 2 & 4) */}
+            {/* VIDEO SERIES ROADMAP */}
             {/* ============================================================ */}
             {mainMode === "video" && (
               <div className="space-y-8 animate-in fade-in duration-200">

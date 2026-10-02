@@ -287,7 +287,7 @@ export default function SheetDetailPage() {
           </div>
         </div>
 
-        {/* Problems Table matching Screenshot 3 */}
+        {/* Problems Table */}
         <div className="w-full bg-white/95 dark:bg-[#0c0c11]/90 border border-slate-200 dark:border-neutral-800/80 rounded-2xl overflow-hidden shadow-sm dark:shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">

@@ -43,7 +43,7 @@ export default function SheetsPage() {
   return (
     <AppShell title="Practice Sheets">
       <div className="w-full max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12">
-        {/* SECTION 1: HERO WITH LIVE ANIMATED PRACTICE SHEET PREVIEW (Screenshot 1) */}
+        {/* HERO WITH LIVE PRACTICE SHEET PREVIEW */}
         <section className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center pb-16 lg:pb-24 border-b border-slate-200 dark:border-neutral-900">
           {/* Left Column: Headline and Call to Actions */}
           <div className="lg:col-span-6 xl:col-span-7 space-y-6">
@@ -92,7 +92,7 @@ export default function SheetsPage() {
           </div>
         </section>
 
-        {/* SECTION 2: HOW A ROW WORKS (Screenshot 2) */}
+        {/* HOW A ROW WORKS */}
         <section id="how-a-row-works" className="py-16 lg:py-24 border-b border-slate-200 dark:border-neutral-900">
           <div className="max-w-2xl mb-12">
             <span className="text-xs font-semibold text-[#E04D4D] uppercase tracking-wider mb-2 block">
@@ -106,7 +106,7 @@ export default function SheetsPage() {
             </p>
           </div>
 
-          {/* 4 Feature Columns from Screenshot 2 */}
+          {/* Feature Columns */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10">
             {/* Feature 1 */}
             <div className="space-y-3">
