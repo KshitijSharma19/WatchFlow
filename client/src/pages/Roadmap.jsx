@@ -74,18 +74,6 @@ export default function RoadmapPage() {
   const [activeRoadmap, setActiveRoadmap] = useState(null);
   const [expandedDays, setExpandedDays] = useState({ 1: true });
 
-  // Popular tech suggestions for "Learn anything"
-  const popularTopics = [
-    "Docker & Kubernetes",
-    "System Design",
-    "Spring Boot",
-    "Next.js 15 Fullstack",
-    "DevOps & CI/CD",
-    "Rust for Beginners",
-    "Golang Microservices",
-    "Generative AI & LLMs",
-  ];
-
   // Load saved roadmap from localStorage on mount
   useEffect(() => {
     try {
@@ -382,6 +370,18 @@ export default function RoadmapPage() {
                     <span>Goal: {activeRoadmap.goal}</span>
                   </div>
                 )}
+                {activeRoadmap.sprints && activeRoadmap.sprints.length > 0 && (
+                  <div className="flex items-center gap-1.5">
+                    <Layers className="w-4 h-4 text-[#E04D4D]" />
+                    <span>{activeRoadmap.sprints.length} Sprints / Modules</span>
+                  </div>
+                )}
+                {activeRoadmap.totalProblems && (
+                  <div className="flex items-center gap-1.5">
+                    <Code2 className="w-4 h-4 text-[#E04D4D]" />
+                    <span>{activeRoadmap.totalProblems} Problems Total</span>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -425,10 +425,15 @@ export default function RoadmapPage() {
                         </button>
 
                         <div className="min-w-0">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-xs font-bold text-[#E04D4D] uppercase tracking-wide">
                               Day {dayItem.day}
                             </span>
+                            {dayItem.sprintName && (
+                              <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-neutral-800 text-slate-600 dark:text-neutral-300 font-medium border border-slate-200/80 dark:border-neutral-700/80">
+                                {dayItem.sprintName}
+                              </span>
+                            )}
                             {dayItem.durationMinutes && (
                               <span className="text-[10px] px-2 py-0.5 rounded-full bg-slate-100 dark:bg-neutral-900 text-slate-500 dark:text-neutral-400">
                                 ~{dayItem.durationMinutes} mins
@@ -799,9 +804,9 @@ export default function RoadmapPage() {
                   </div>
                 )}
 
-                {/* IF LEARN ANYTHING: Topic Input & Suggestions */}
+                {/* IF LEARN ANYTHING: Topic Input */}
                 {buildCategory === "ai" && (
-                  <div className="space-y-4 pt-2">
+                  <div className="space-y-3 pt-2">
                     <label className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-neutral-400 block">
                       What technology or skill do you want to learn?
                     </label>
@@ -812,29 +817,9 @@ export default function RoadmapPage() {
                         type="text"
                         value={aiTopic}
                         onChange={(e) => setAiTopic(e.target.value)}
-                        placeholder="e.g. Docker & Kubernetes, Spring Boot, System Design, Rust..."
-                        className="w-full pl-10 pr-4 py-3 rounded-xl bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none focus:border-[#E04D4D] focus:ring-1 focus:ring-[#E04D4D] transition"
+                        placeholder="e.g. Spring Boot, Docker & Kubernetes, System Design, Rust, React..."
+                        className="w-full pl-10 pr-4 py-3 rounded-xl bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none focus:border-[#E04D4D] focus:ring-1 focus:ring-[#E04D4D] transition shadow-xs"
                       />
-                    </div>
-
-                    <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="text-xs text-slate-400 dark:text-neutral-500 mr-1">
-                        Popular:
-                      </span>
-                      {popularTopics.map((top) => (
-                        <button
-                          key={top}
-                          type="button"
-                          onClick={() => setAiTopic(top)}
-                          className={`text-xs px-2.5 py-1 rounded-lg border transition cursor-pointer ${
-                            aiTopic === top
-                              ? "bg-red-500/10 border-red-500/30 text-[#E04D4D] font-semibold"
-                              : "bg-white dark:bg-neutral-900 border-slate-200 dark:border-neutral-800 text-slate-600 dark:text-neutral-400 hover:border-slate-300 dark:hover:border-neutral-700"
-                          }`}
-                        >
-                          {top}
-                        </button>
-                      ))}
                     </div>
                   </div>
                 )}
@@ -876,7 +861,6 @@ export default function RoadmapPage() {
                     {[
                       "Interview soon",
                       "Strong fundamentals",
-                      "A specific company",
                       "Just curious",
                     ].map((targetGoal) => (
                       <button

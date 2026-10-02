@@ -187,7 +187,38 @@ export const PRESET_VIDEO_COURSES = [
 ];
 
 /**
+ * Canonical DSA Topic progression order for realistic syllabus sequencing
+ */
+const CANONICAL_DSA_TOPIC_ORDER = [
+  "Arrays & Hashing",
+  "Arrays",
+  "Two Pointers",
+  "Sliding Window",
+  "Stack",
+  "Binary Search",
+  "Linked List",
+  "Trees",
+  "Binary Search Tree",
+  "Tries",
+  "Heap / Priority Queue",
+  "Heap",
+  "Backtracking",
+  "Recursion",
+  "Graphs",
+  "Matrix",
+  "1-D Dynamic Programming",
+  "2-D Dynamic Programming",
+  "Dynamic Programming",
+  "Greedy",
+  "Intervals",
+  "Bit Manipulation",
+  "Math & Geometry",
+  "General",
+];
+
+/**
  * Generate customized DSA Sheet Roadmap
+ * Schedules ALL problems from the selected sheet across the chosen days (no questions dropped)
  */
 export function generateDsaRoadmap({
   sheetId = "leetcode-top-150",
@@ -199,97 +230,85 @@ export function generateDsaRoadmap({
   const sheet =
     SHEETS_DATA.find((s) => s.id === sheetId) || SHEETS_DATA[0];
 
-  const totalDays = Math.min(Math.max(parseInt(durationDays, 10) || 30, 7), 60);
+  const totalDays = Math.min(Math.max(parseInt(durationDays, 10) || 30, 3), 90);
 
-  // Group problems by category / topic
-  const problemsByTopic = {};
-  sheet.problems.forEach((prob) => {
-    const cat = prob.category || "General";
-    if (!problemsByTopic[cat]) {
-      problemsByTopic[cat] = [];
+  // Sort ALL sheet problems by logical DSA topic progression, then by difficulty (Easy -> Medium -> Hard)
+  const diffRank = { Easy: 1, Medium: 2, Hard: 3 };
+  const getTopicRank = (cat) => {
+    const idx = CANONICAL_DSA_TOPIC_ORDER.findIndex(
+      (t) => t.toLowerCase() === (cat || "").toLowerCase()
+    );
+    return idx === -1 ? 999 : idx;
+  };
+
+  const allProblems = [...sheet.problems].sort((a, b) => {
+    const catA = a.category || "General";
+    const catB = b.category || "General";
+    const topicRankA = getTopicRank(catA);
+    const topicRankB = getTopicRank(catB);
+
+    if (topicRankA !== topicRankB) {
+      return topicRankA - topicRankB;
     }
-    problemsByTopic[cat].push(prob);
+    const diffA = diffRank[a.difficulty] || 2;
+    const diffB = diffRank[b.difficulty] || 2;
+    return diffA - diffB;
   });
 
-  const topicsList = Object.keys(problemsByTopic);
+  const totalProblemsCount = allProblems.length;
 
-  // Determine daily problem quota based on time per day
-  let problemsPerDay = 2;
-  if (timePerDay === "30 min") problemsPerDay = 1;
-  else if (timePerDay === "2 hr+") problemsPerDay = 3;
-
-  const totalProblemsTarget = Math.min(
-    sheet.problems.length,
-    totalDays * problemsPerDay
-  );
-
-  // Select balanced problems across topics
-  const selectedProblems = [];
-  let topicIndex = 0;
-
-  while (
-    selectedProblems.length < totalProblemsTarget &&
-    selectedProblems.length < sheet.problems.length
-  ) {
-    const currentTopic = topicsList[topicIndex % topicsList.length];
-    const available = problemsByTopic[currentTopic];
-
-    if (available && available.length > 0) {
-      selectedProblems.push(available.shift());
-    }
-    topicIndex++;
-  }
-
-  // Distribute selected problems into sequential days
+  // Evenly distribute ALL problems across the selected totalDays (every problem is assigned)
   const days = [];
-  const probChunkSize = Math.max(
-    1,
-    Math.ceil(selectedProblems.length / totalDays)
-  );
-
-  let currentProbPointer = 0;
+  let currentPointer = 0;
 
   for (let dayNum = 1; dayNum <= totalDays; dayNum++) {
-    const dayProblems = selectedProblems.slice(
-      currentProbPointer,
-      currentProbPointer + probChunkSize
-    );
-    currentProbPointer += probChunkSize;
+    const remainingProblems = totalProblemsCount - currentPointer;
+    const remainingDays = totalDays - dayNum + 1;
+    const dayProblemCount = remainingDays > 0 ? Math.ceil(remainingProblems / remainingDays) : 0;
 
-    if (dayProblems.length === 0 && selectedProblems.length > 0) {
+    const dayProblems = allProblems.slice(
+      currentPointer,
+      currentPointer + dayProblemCount
+    );
+    currentPointer += dayProblems.length;
+
+    if (dayProblems.length === 0) {
       days.push({
         day: dayNum,
-        title: `Revision & Practice: Strengthen Core Patterns`,
-        focusTopic: "Revision & Mock Interview",
+        title: "Revision & Mock Interview Practice",
+        focusTopic: "Revision",
         problems: [],
         isRestOrReview: true,
-        note: "Review any tough problems from earlier days, write brute force and optimal solutions on paper.",
+        note: "Review any tough problems from earlier days, re-implement optimal solutions, and test time/space constraints.",
       });
     } else {
-      const primaryCategory = dayProblems[0]?.category || "Problem Solving";
+      const uniqueCats = Array.from(new Set(dayProblems.map((p) => p.category || "Problem Solving")));
+      const primaryCategory = uniqueCats.slice(0, 2).join(" & ");
       days.push({
         day: dayNum,
         title: `${primaryCategory} Practice & Patterns`,
         focusTopic: primaryCategory,
         problems: dayProblems,
         isRestOrReview: false,
-        note: `Solve problems on LeetCode first, then inspect optimal complexity and solution walkthrough.`,
+        note: `Target: Solve ${dayProblems.length} problem${dayProblems.length > 1 ? "s" : ""} on LeetCode covering ${uniqueCats.join(", ")}. Analyze time and space complexity.`,
       });
     }
   }
+
+  const avgPerDay = (totalProblemsCount / totalDays).toFixed(1);
 
   return {
     id: `dsa-roadmap-${Date.now()}`,
     type: "dsa",
     title: `${sheet.title} Personalized Roadmap`,
-    subtitle: `Custom DSA syllabus drafted from ${sheet.title} for ${currentLevel} aiming for ${goal}`,
+    subtitle: `Custom DSA syllabus drafted from ${sheet.title}: Complete all ${totalProblemsCount} problems across ${totalDays} days (~${avgPerDay} problems/day) for ${currentLevel}`,
     sheetId: sheet.id,
     sheetTitle: sheet.title,
     currentLevel,
     goal,
     timePerDay,
     totalDays,
-    totalProblems: selectedProblems.length,
+    totalProblems: totalProblemsCount,
     days,
     completedDays: {},
     completedItems: {},
@@ -408,13 +427,14 @@ export async function generateAiRoadmap({
     return {
       id: `ai-roadmap-${Date.now()}`,
       type: "ai",
-      title: roadmapData.title || `${topic} Mastery Roadmap`,
-      subtitle: roadmapData.summary || `A personalized ${durationDays}-day learning path for ${topic}`,
+      title: roadmapData.title || `${topic} Engineering Roadmap`,
+      subtitle: roadmapData.summary || `A personalized ${durationDays}-day curriculum for ${topic}`,
       topic,
       currentLevel,
       goal,
       timePerDay,
       totalDays: roadmapData.totalDays || durationDays,
+      sprints: roadmapData.sprints || [],
       days: roadmapData.days || [],
       completedDays: {},
       completedItems: {},
