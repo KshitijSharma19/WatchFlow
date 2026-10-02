@@ -141,7 +141,7 @@ export default function Dashboard() {
           <button
             type="button"
             onClick={fetchData}
-            className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] text-xs font-semibold text-white hover:opacity-90 transition cursor-pointer"
+            className="px-5 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 text-xs font-semibold transition cursor-pointer"
           >
             Try Again
           </button>
@@ -270,7 +270,7 @@ export default function Dashboard() {
                             `/playlist/${continueData.playlist._id}/video/${continueData.video._id}?start=${continueData.video.watchedSeconds}`,
                           )
                         }
-                        className="w-full sm:w-fit mt-5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] font-semibold text-white hover:opacity-90 transition outline-none focus-visible:ring-2 focus-visible:ring-red-400 cursor-pointer"
+                        className="w-full sm:w-fit mt-5 px-4 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-red-400 cursor-pointer"
                       >
                         Resume Learning
                       </button>

@@ -98,7 +98,7 @@ export default function CreatePlaylistModal({
             className={`flex items-center gap-2 rounded-xl px-5 py-2 font-medium transition-opacity duration-200 cursor-pointer ${
               importing || !url.trim()
                 ? "cursor-not-allowed bg-slate-200 dark:bg-neutral-700 text-slate-400 dark:text-neutral-400"
-                : "bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] text-white hover:opacity-90"
+                : "bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30"
             }`}
           >
             {importing && <Loader2 className="h-4 w-4 animate-spin" />}

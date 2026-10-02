@@ -15,7 +15,7 @@ import Settings from "./pages/Settings";
 import SheetsPage from "./pages/Sheets";
 import SheetDetailPage from "./pages/SheetDetail";
 import RoadmapPage from "./pages/Roadmap";
-import NotesPage from "./pages/Notes";
+import NotesHub from "./pages/NotesHub";
 
 import ProtectedRoute from "./components/common/ProtectedRoute";
 
@@ -23,6 +23,10 @@ const PROTECTED_ROUTES = [
   {
     path: "/dashboard",
     element: <Dashboard />,
+  },
+  {
+    path: "/notes",
+    element: <NotesHub />,
   },
   {
     path: "/library",
@@ -53,7 +57,6 @@ export default function App() {
         <Route path="/sheets" element={<SheetsPage />} />
         <Route path="/sheets/:sheetId" element={<SheetDetailPage />} />
         <Route path="/roadmap" element={<RoadmapPage />} />
-        <Route path="/notes" element={<NotesPage />} />
 
         {PROTECTED_ROUTES.map(({ path, element }) => (
           <Route

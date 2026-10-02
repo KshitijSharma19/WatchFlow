@@ -25,7 +25,7 @@ export default function EmptyState({
         <button
           type="button"
           onClick={onClick}
-          className="mt-8 inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] px-5 py-3 font-medium text-white transition-opacity duration-200 hover:opacity-90 cursor-pointer"
+          className="mt-8 inline-flex items-center gap-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 px-5 py-3 font-medium transition duration-200 cursor-pointer shadow-xs"
         >
           <Plus className="h-5 w-5" />
           {buttonText}

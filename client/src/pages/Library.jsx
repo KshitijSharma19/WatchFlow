@@ -87,11 +87,11 @@ export default function Library() {
 
           <button
             type="button"
-            className="flex items-center gap-2 px-5 py-3 rounded-xl bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] font-medium hover:opacity-90 active:scale-[0.99] transition outline-none focus-visible:ring-2 focus-visible:ring-red-500/30"
+            className="flex items-center gap-2 px-5 py-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 font-medium active:scale-[0.99] transition cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-red-500/30"
             onClick={openModal}
           >
             <Plus className="w-5 h-5" />
-            Import Playlist
+            <span>Import Playlist</span>
           </button>
         </div>
 

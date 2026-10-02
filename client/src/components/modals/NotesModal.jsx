@@ -265,7 +265,7 @@ export default function NotesModal({
                 <button
                   type="submit"
                   disabled={savingNote || !newNoteText.trim()}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] text-xs font-semibold text-white hover:opacity-90 transition disabled:opacity-50 cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 text-xs font-semibold transition disabled:opacity-50 cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   Add Note
@@ -371,7 +371,7 @@ export default function NotesModal({
                 type="button"
                 disabled={savingGeneral}
                 onClick={handleSaveGeneralNotes}
-                className="rounded-lg bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] px-4 py-2 text-xs font-semibold text-white hover:opacity-90 transition disabled:opacity-50 cursor-pointer"
+                className="rounded-lg bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 px-4 py-2 text-xs font-semibold transition disabled:opacity-50 cursor-pointer"
               >
                 {savingGeneral ? "Saving..." : "Save Summary"}
               </button>

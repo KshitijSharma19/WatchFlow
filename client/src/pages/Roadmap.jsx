@@ -315,7 +315,7 @@ export default function RoadmapPage() {
                 <button
                   type="button"
                   onClick={() => setSearchParams({}, { replace: true })}
-                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] text-white text-xs font-semibold hover:brightness-110 shadow-xs transition cursor-pointer"
+                  className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/25 text-xs font-semibold shadow-xs transition cursor-pointer"
                 >
                   <Zap className="w-3.5 h-3.5" />
                   <span>New Roadmap</span>
@@ -581,7 +581,7 @@ export default function RoadmapPage() {
                                   <button
                                     type="button"
                                     onClick={() => handleWatchVideo(vid)}
-                                    className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] text-white text-xs font-semibold hover:brightness-110 transition cursor-pointer shrink-0"
+                                    className="inline-flex items-center gap-1 px-3 py-1 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/25 text-xs font-semibold transition cursor-pointer shrink-0"
                                   >
                                     <Play className="w-3 h-3 fill-current" />
                                     <span>Watch</span>
@@ -670,7 +670,7 @@ export default function RoadmapPage() {
                   onClick={() => setMainMode("build")}
                   className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer ${
                     mainMode === "build"
-                      ? "bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] text-white shadow-md shadow-red-500/20"
+                      ? "bg-red-500/10 text-[#E04D4D] dark:text-red-400 border border-red-500/30 shadow-xs"
                       : "bg-white/80 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:hover:text-white"
                   }`}
                 >
@@ -682,7 +682,7 @@ export default function RoadmapPage() {
                   onClick={() => setMainMode("video")}
                   className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition cursor-pointer ${
                     mainMode === "video"
-                      ? "bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] text-white shadow-md shadow-red-500/20"
+                      ? "bg-red-500/10 text-[#E04D4D] dark:text-red-400 border border-red-500/30 shadow-xs"
                       : "bg-white/80 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:hover:text-white"
                   }`}
                 >
@@ -974,7 +974,7 @@ export default function RoadmapPage() {
                         ? handleBuildDsaRoadmap
                         : handleBuildAiRoadmap
                     }
-                    className="flex items-center gap-2 bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] hover:brightness-110 text-white font-semibold text-sm sm:text-base px-8 py-3.5 rounded-xl shadow-lg hover:shadow-red-500/20 active:scale-[0.98] transition cursor-pointer disabled:opacity-50"
+                    className="flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 hover:border-red-500/50 font-semibold text-sm sm:text-base px-8 py-3.5 rounded-xl shadow-xs active:scale-[0.98] transition cursor-pointer disabled:opacity-50"
                   >
                     {isGeneratingAi ? (
                       <>
@@ -1070,7 +1070,7 @@ export default function RoadmapPage() {
                         <div className="flex items-center justify-center gap-3">
                           <Link
                             to="/library"
-                            className="px-4 py-2 rounded-xl bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] text-white text-xs font-semibold hover:brightness-110 transition"
+                            className="px-4 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/25 text-xs font-semibold transition"
                           >
                             Go to Library
                           </Link>
@@ -1124,7 +1124,7 @@ export default function RoadmapPage() {
                                 type="button"
                                 disabled={isBuildingVideoRoadmap}
                                 onClick={() => handleBuildVideoRoadmap(pl)}
-                                className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] hover:brightness-110 text-white font-semibold text-xs sm:text-sm shadow-xs transition cursor-pointer disabled:opacity-50"
+                                className="px-5 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/25 text-xs sm:text-sm font-semibold shadow-xs transition cursor-pointer disabled:opacity-50"
                               >
                                 {isBuildingVideoRoadmap ? "Drafting..." : "Start this"}
                               </button>
@@ -1184,7 +1184,7 @@ export default function RoadmapPage() {
                             <button
                               type="button"
                               onClick={() => handleBuildVideoRoadmap(course)}
-                              className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] hover:brightness-110 text-white font-semibold text-xs sm:text-sm shadow-xs transition cursor-pointer"
+                              className="px-5 py-2.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/25 text-xs sm:text-sm font-semibold shadow-xs transition cursor-pointer"
                             >
                               Start this
                             </button>

@@ -6,7 +6,7 @@ const VARIANTS = {
     icon: AlertTriangle,
     iconBg: "bg-red-500/10",
     iconColor: "text-red-400",
-    buttonClass: "bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D]",
+    buttonClass: "bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30",
   },
   primary: {
     icon: RefreshCw,

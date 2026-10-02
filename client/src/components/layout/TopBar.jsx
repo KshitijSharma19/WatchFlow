@@ -152,7 +152,7 @@ export default function TopBar({ title, showBack = false, onMenuClick }) {
               className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-neutral-800 bg-white/90 dark:bg-[#151518] hover:bg-slate-100 dark:hover:bg-neutral-800/80 transition cursor-pointer select-none"
             >
               {/* Initial Avatar Box */}
-              <div className="w-7 h-7 rounded-lg bg-[#3d2014] dark:bg-[#3d2014] flex items-center justify-center text-[#f59e0b] font-bold text-xs shadow-xs border border-amber-800/40">
+              <div className="w-7 h-7 rounded-lg bg-amber-100 dark:bg-[#3d2014] flex items-center justify-center text-amber-800 dark:text-[#f59e0b] font-bold text-xs shadow-xs border border-amber-200 dark:border-amber-800/40">
                 {initial}
               </div>
 

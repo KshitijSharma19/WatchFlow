@@ -14,11 +14,12 @@ const streakRoutes = require("./routes/streakRoutes");
 const videoRoutes = require("./routes/videoRoutes");
 const noteRoutes = require("./routes/noteRoutes");
 const roadmapRoutes = require("./routes/roadmapRoutes");
-const notesHubRoutes = require("./routes/notesHubRoutes");
+const documentNoteRoutes = require("./routes/documentNoteRoutes");
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ limit: "50mb", extended: true }));
 app.use(cors());
 
 // Health check endpoints (Unprotected)
@@ -37,7 +38,7 @@ app.use("/api/settings", settingsRoutes);
 app.use("/api/streak", streakRoutes);
 app.use("/api/videos", videoRoutes);
 app.use("/api/roadmap", roadmapRoutes);
-app.use("/api/notes-hub", notesHubRoutes);
+app.use("/api/notes-hub", documentNoteRoutes);
 app.use("/api", noteRoutes);
 
 // Fallback 404 handler

@@ -259,10 +259,10 @@ export default function AuthPage() {
             <button
               type="submit"
               disabled={loading || githubLoading}
-              className={`group w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] border border-red-400/20 py-3 rounded-xl font-bold text-sm text-white shadow-[0_4px_20px_rgba(224,77,77,0.2)] transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-red-400 cursor-pointer ${
+              className={`group w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-[#E04D4D] dark:text-red-400 py-3 rounded-xl font-bold text-sm shadow-xs transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-red-400 cursor-pointer ${
                 loading || githubLoading
                   ? "opacity-70 cursor-not-allowed"
-                  : "hover:brightness-110 active:scale-[0.99]"
+                  : "active:scale-[0.99]"
               }`}
             >
               {loading

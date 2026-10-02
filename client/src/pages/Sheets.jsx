@@ -66,7 +66,7 @@ export default function SheetsPage() {
               <button
                 type="button"
                 onClick={() => scrollToSection("dsa-sheets")}
-                className="flex items-center gap-2 bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] hover:brightness-110 text-white font-semibold text-sm px-6 py-3.5 rounded-xl shadow-lg hover:shadow-[0_4px_25px_rgba(224,77,77,0.3)] active:scale-[0.98] transition cursor-pointer"
+                className="flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 hover:border-red-500/50 font-semibold text-sm px-6 py-3.5 rounded-xl shadow-xs active:scale-[0.98] transition cursor-pointer"
               >
                 <span>Open the sheet</span>
                 <ArrowRight className="w-4 h-4" />

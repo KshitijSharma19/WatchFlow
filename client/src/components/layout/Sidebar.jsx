@@ -23,6 +23,11 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       path: "/dashboard",
     },
     {
+      name: "Notes Hub",
+      icon: BookOpen,
+      path: "/notes",
+    },
+    {
       name: "Practice Sheets",
       icon: Code2,
       path: "/sheets",
@@ -31,11 +36,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       name: "Roadmap",
       icon: Compass,
       path: "/roadmap",
-    },
-    {
-      name: "Notes Hub",
-      icon: BookOpen,
-      path: "/notes",
     },
   ];
 
@@ -68,16 +68,16 @@ export default function Sidebar({ isOpen, setIsOpen }) {
   });
 
   const isItemActive = (item) => {
+    if (item.name === "Notes Hub") {
+      return location.pathname.startsWith("/notes");
+    }
+
     if (item.name === "Practice Sheets") {
       return location.pathname.startsWith("/sheets");
     }
 
     if (item.name === "Roadmap") {
       return location.pathname.startsWith("/roadmap");
-    }
-
-    if (item.name === "Notes Hub") {
-      return location.pathname.startsWith("/notes");
     }
 
     if (item.name === "Player") {

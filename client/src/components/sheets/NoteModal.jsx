@@ -72,7 +72,7 @@ export default function NoteModal({ problem, isOpen, onClose, onSaveNote, initia
 
           <button
             onClick={handleSave}
-            className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] text-xs font-semibold text-white shadow-md hover:brightness-110 active:scale-98 transition cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 text-xs font-semibold shadow-xs active:scale-98 transition cursor-pointer"
           >
             {saved ? (
               <>
