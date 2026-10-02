@@ -247,7 +247,22 @@ exports.githubAuth = (req, res) => {
 // Handle GitHub redirect callback on backend
 exports.githubAuthCallback = async (req, res) => {
   const { code, error, error_description } = req.query;
-  const clientUrl = process.env.CLIENT_URL || "http://localhost:5173";
+
+  let clientUrl = process.env.CLIENT_URL;
+
+  // Smart fallback if CLIENT_URL is empty, default placeholder, or contains example.com
+  if (!clientUrl || clientUrl.includes("example.com")) {
+    const host = req.headers["x-forwarded-host"] || req.headers.host;
+    const proto = req.headers["x-forwarded-proto"] || "https";
+    if (host && !host.includes("localhost")) {
+      clientUrl = `${proto}://${host}`;
+    } else {
+      clientUrl = "http://localhost:5173";
+    }
+  }
+
+  // Always strip trailing slashes to prevent malformed redirects like //login
+  clientUrl = clientUrl.replace(/\/+$/, "");
 
   if (error || !code) {
     const errMsg = error_description || error || "GitHub authorization canceled";
