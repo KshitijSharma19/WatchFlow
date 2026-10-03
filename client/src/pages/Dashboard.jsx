@@ -118,7 +118,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <Loader
-        text="Loading Dashboard..."
+        text="Loading Learning..."
         subtitle="Preparing your learning insights."
         fullscreen
       />
@@ -127,13 +127,13 @@ export default function Dashboard() {
 
   if (error) {
     return (
-      <AppShell title="Dashboard" showBack={false}>
+      <AppShell title="Learning" showBack={false}>
         <div className="min-h-[60vh] flex flex-col items-center justify-center p-6 text-center">
           <div className="w-12 h-12 rounded-2xl bg-red-500/10 border border-red-500/20 flex items-center justify-center text-red-400 mb-4">
             ⚠️
           </div>
           <h2 className="text-lg font-bold text-neutral-100 mb-2">
-            Failed to load dashboard
+            Failed to load learning insights
           </h2>
           <p className="text-xs text-neutral-400 max-w-sm mb-6">
             We couldn't connect to the WatchFlow API server or fetch your learning data. Please check your network or try again.
@@ -154,7 +154,7 @@ export default function Dashboard() {
   const hasPlaylists = (dashboardData?.stats?.totalPlaylists ?? 0) > 0;
 
   return (
-    <AppShell title="Dashboard" showBack={false}>
+    <AppShell title="Learning" showBack={false}>
       {!hasPlaylists ? (
         <EmptyState
           icon={ListMusic}

@@ -12,11 +12,10 @@ import { useAuth } from "../context/AuthContext";
 
 const FeatureCard = memo(({ icon: Icon, title, description, showBorder }) => (
   <div
-    className={`flex flex-col items-center text-center px-6 relative group ${
-      showBorder
+    className={`flex flex-col items-center text-center px-6 relative group ${showBorder
         ? "lg:after:content-[''] lg:after:absolute lg:after:top-2 lg:after:right-0 lg:after:h-14 lg:after:w-[1px] lg:after:bg-slate-200 dark:lg:after:bg-neutral-900/60"
         : ""
-    }`}
+      }`}
   >
     <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-neutral-950 border border-slate-200 dark:border-neutral-900 flex items-center justify-center text-[#E04D4D] mb-4 shadow-xs dark:shadow-md group-hover:border-red-500/20 transition-colors duration-200">
       <Icon className="w-5 h-5" strokeWidth={1.5} />
@@ -86,15 +85,15 @@ export default function WatchFlowHero() {
         </p>
 
         <Link
-          to={isAuthenticated ? "/dashboard" : "/signup"}
+          to={isAuthenticated ? "/learning" : "/signup"}
           aria-label={
             isAuthenticated
-              ? "Go to dashboard"
+              ? "Go to learning"
               : "Create an account to get started"
           }
           className="group flex items-center gap-2.5 bg-gradient-to-r from-[#BA3C3C] to-[#E04D4D] border border-red-400/20 px-8 py-3 rounded-xl font-bold text-sm sm:text-base text-white shadow-[0_4px_25px_rgba(224,77,77,0.25)] hover:shadow-[0_4px_35px_rgba(224,77,77,0.45)] hover:brightness-110 active:scale-[0.98] transition-[shadow,filter,transform] duration-300"
         >
-          {isAuthenticated ? "Go to Dashboard" : "Get Started"}
+          {isAuthenticated ? "Go to Learning" : "Get Started"}
           <ArrowRight
             className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform duration-300"
             strokeWidth={2.5}

@@ -42,7 +42,7 @@ export default function AuthPage() {
     if (token) {
       // Backend OAuth redirect callback with generated token
       login(token);
-      navigate("/dashboard", { replace: true });
+      navigate("/learning", { replace: true });
       return;
     }
 
@@ -55,7 +55,7 @@ export default function AuthPage() {
           const response = await api.post("/auth/github", { code });
           if (response.data?.token) {
             login(response.data.token, response.data.user);
-            navigate("/dashboard", { replace: true });
+            navigate("/learning", { replace: true });
           } else {
             setError("Failed to retrieve authentication token from GitHub");
           }
@@ -63,8 +63,8 @@ export default function AuthPage() {
           console.error("GitHub Auth Error:", err);
           setError(
             err?.response?.data?.message ||
-              err?.message ||
-              "GitHub authentication failed. Please try again.",
+            err?.message ||
+            "GitHub authentication failed. Please try again.",
           );
         } finally {
           setGithubLoading(false);
@@ -105,14 +105,14 @@ export default function AuthPage() {
       endpoint: isLogin ? "/auth/login" : "/auth/register",
       payload: isLogin
         ? {
-            email: email.trim(),
-            password,
-          }
+          email: email.trim(),
+          password,
+        }
         : {
-            username: username.trim(),
-            email: email.trim(),
-            password,
-          },
+          username: username.trim(),
+          email: email.trim(),
+          password,
+        },
     };
 
     try {
@@ -121,7 +121,7 @@ export default function AuthPage() {
       const user = response.data.user;
 
       login(token, user);
-      navigate("/dashboard");
+      navigate("/learning");
     } catch (err) {
       setError(
         err?.response?.data?.message || err?.message || "Authentication failed",
@@ -259,11 +259,10 @@ export default function AuthPage() {
             <button
               type="submit"
               disabled={loading || githubLoading}
-              className={`group w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-[#E04D4D] dark:text-red-400 py-3 rounded-xl font-bold text-sm shadow-xs transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-red-400 cursor-pointer ${
-                loading || githubLoading
+              className={`group w-full flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-[#E04D4D] dark:text-red-400 py-3 rounded-xl font-bold text-sm shadow-xs transition-all duration-300 outline-none focus-visible:ring-2 focus-visible:ring-red-400 cursor-pointer ${loading || githubLoading
                   ? "opacity-70 cursor-not-allowed"
                   : "active:scale-[0.99]"
-              }`}
+                }`}
             >
               {loading
                 ? "Loading..."

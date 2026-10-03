@@ -15,6 +15,7 @@ const videoRoutes = require("./routes/videoRoutes");
 const noteRoutes = require("./routes/noteRoutes");
 const roadmapRoutes = require("./routes/roadmapRoutes");
 const documentNoteRoutes = require("./routes/documentNoteRoutes");
+const feedbackRoutes = require("./routes/feedbackRoutes");
 
 const app = express();
 
@@ -39,6 +40,7 @@ app.use("/api/streak", streakRoutes);
 app.use("/api/videos", videoRoutes);
 app.use("/api/roadmap", roadmapRoutes);
 app.use("/api/notes-hub", documentNoteRoutes);
+app.use("/api/feedback", feedbackRoutes);
 app.use("/api", noteRoutes);
 
 // Fallback 404 handler

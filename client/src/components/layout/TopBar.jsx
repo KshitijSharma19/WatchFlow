@@ -6,6 +6,7 @@ import {
   Moon,
   ChevronDown,
   Settings,
+  MessageSquare,
   LogOut,
 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
@@ -96,6 +97,12 @@ export default function TopBar({ title, showBack = false, onMenuClick }) {
         {/* Quick Nav Links */}
         <nav className="hidden md:flex items-center gap-1.5 ml-4 pl-4 border-l border-slate-200 dark:border-neutral-800 text-xs font-medium">
           <Link
+            to="/learning"
+            className="px-3 py-1.5 rounded-lg transition text-slate-700 hover:text-slate-900 dark:text-neutral-200 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 font-medium"
+          >
+            Learning
+          </Link>
+          <Link
             to="/sheets"
             className="px-3 py-1.5 rounded-lg transition text-slate-700 hover:text-slate-900 dark:text-neutral-200 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 font-medium"
           >
@@ -106,12 +113,6 @@ export default function TopBar({ title, showBack = false, onMenuClick }) {
             className="px-3 py-1.5 rounded-lg transition text-slate-700 hover:text-slate-900 dark:text-neutral-200 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 font-medium"
           >
             Roadmap
-          </Link>
-          <Link
-            to="/dashboard"
-            className="px-3 py-1.5 rounded-lg transition text-slate-700 hover:text-slate-900 dark:text-neutral-200 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 font-medium"
-          >
-            Dashboard
           </Link>
         </nav>
       </div>
@@ -165,9 +166,8 @@ export default function TopBar({ title, showBack = false, onMenuClick }) {
 
               {/* Downward Chevron */}
               <ChevronDown
-                className={`w-3.5 h-3.5 text-slate-400 dark:text-neutral-400 transition-transform duration-200 ${
-                  isDropdownOpen ? "rotate-180" : ""
-                }`}
+                className={`w-3.5 h-3.5 text-slate-400 dark:text-neutral-400 transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : ""
+                  }`}
               />
             </button>
 
@@ -195,6 +195,15 @@ export default function TopBar({ title, showBack = false, onMenuClick }) {
                   >
                     <Settings className="w-4 h-4 text-slate-500 dark:text-neutral-400" />
                     <span>Settings</span>
+                  </Link>
+
+                  <Link
+                    to="/feedback"
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-sm font-medium text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-neutral-800/60 transition cursor-pointer text-left"
+                  >
+                    <MessageSquare className="w-4 h-4 text-slate-500 dark:text-neutral-400" />
+                    <span>Feedback</span>
                   </Link>
 
                   <button

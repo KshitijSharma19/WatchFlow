@@ -1,10 +1,26 @@
 import { useEffect } from "react";
-import { Home, ListMusic, Settings, X, Play, FolderOpen, Code2, Compass, BookOpen } from "lucide-react";
+import { ListMusic, Settings, X, Play, FolderOpen, Code2, Compass, BookOpen } from "lucide-react";
 import { NavLink, useLocation, Link } from "react-router-dom";
 import {
   getRecentPlaylist,
   getRecentPlayer,
 } from "../../utils/recentNavigation.js";
+
+const YoutubeIcon = ({ className = "w-4 h-4", ...props }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+    {...props}
+  >
+    <rect width="20" height="15" x="2" y="4.5" rx="4" />
+    <polygon points="10 9 15 12 10 15 10 9" />
+  </svg>
+);
 
 export default function Sidebar({ isOpen, setIsOpen }) {
   const location = useLocation();
@@ -18,14 +34,9 @@ export default function Sidebar({ isOpen, setIsOpen }) {
 
   const navItems = [
     {
-      name: "Dashboard",
-      icon: Home,
-      path: "/dashboard",
-    },
-    {
-      name: "Notes Hub",
-      icon: BookOpen,
-      path: "/notes",
+      name: "Learning",
+      icon: YoutubeIcon,
+      path: "/learning",
     },
     {
       name: "Practice Sheets",
@@ -36,6 +47,11 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       name: "Roadmap",
       icon: Compass,
       path: "/roadmap",
+    },
+    {
+      name: "Notes Hub",
+      icon: BookOpen,
+      path: "/notes",
     },
   ];
 
@@ -61,10 +77,9 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     });
   }
 
-
   const isItemActive = (item) => {
-    if (item.name === "Notes Hub") {
-      return location.pathname.startsWith("/notes");
+    if (item.name === "Learning") {
+      return location.pathname === "/learning" || location.pathname === "/dashboard";
     }
 
     if (item.name === "Practice Sheets") {
@@ -75,8 +90,16 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       return location.pathname.startsWith("/roadmap");
     }
 
+    if (item.name === "Notes Hub") {
+      return location.pathname.startsWith("/notes");
+    }
+
     if (item.name === "Player") {
       return location.pathname.includes("/video/");
+    }
+
+    if (item.name === "Library") {
+      return location.pathname.startsWith("/library");
     }
 
     if (item.name === "Playlist") {
@@ -113,9 +136,8 @@ export default function Sidebar({ isOpen, setIsOpen }) {
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-72 sm:w-80 flex flex-col justify-between p-5 sm:p-6 border-r border-slate-200 dark:border-neutral-900 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-2xl transition-transform duration-300 ease-in-out shadow-2xl ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed inset-y-0 left-0 z-50 w-72 sm:w-80 flex flex-col justify-between p-5 sm:p-6 border-r border-slate-200 dark:border-neutral-900 bg-white/95 dark:bg-neutral-950/95 backdrop-blur-2xl transition-transform duration-300 ease-in-out shadow-2xl ${isOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <div className="space-y-6">
           <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-neutral-800/70">
@@ -150,18 +172,16 @@ export default function Sidebar({ isOpen, setIsOpen }) {
                   key={item.path}
                   to={item.path}
                   onClick={closeSidebar}
-                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
-                    active
-                      ? "bg-red-500/10 dark:bg-red-950/30 border border-red-500/20 dark:border-red-500/30 text-[#E04D4D] dark:text-red-400 shadow-xs dark:shadow-lg dark:shadow-red-950/50"
-                      : "text-slate-600 hover:text-[#E04D4D] hover:bg-red-500/5 dark:text-neutral-400 dark:hover:text-red-300 dark:hover:bg-red-950/20"
-                  }`}
+                  className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${active
+                      ? "bg-red-500/10 dark:bg-red-950/30 border border-red-500/20 dark:border-red-500/30 text-slate-900 dark:text-white font-semibold shadow-xs dark:shadow-lg dark:shadow-red-950/50"
+                      : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-900/60"
+                    }`}
                 >
                   <Icon
-                    className={`w-4 h-4 transition-colors ${
-                      active
-                        ? "text-red-600 dark:text-red-500"
+                    className={`w-4 h-4 transition-colors ${active
+                        ? "text-slate-900 dark:text-white"
                         : "text-slate-500 dark:text-neutral-400"
-                    }`}
+                      }`}
                   />
 
                   {item.name}
