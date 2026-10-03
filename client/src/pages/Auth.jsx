@@ -42,7 +42,7 @@ export default function AuthPage() {
     if (token) {
       // Backend OAuth redirect callback with generated token
       login(token);
-      navigate("/learning", { replace: true });
+      navigate("/sheets", { replace: true });
       return;
     }
 
@@ -55,7 +55,7 @@ export default function AuthPage() {
           const response = await api.post("/auth/github", { code });
           if (response.data?.token) {
             login(response.data.token, response.data.user);
-            navigate("/learning", { replace: true });
+            navigate("/sheets", { replace: true });
           } else {
             setError("Failed to retrieve authentication token from GitHub");
           }
@@ -121,7 +121,7 @@ export default function AuthPage() {
       const user = response.data.user;
 
       login(token, user);
-      navigate("/learning");
+      navigate("/sheets");
     } catch (err) {
       setError(
         err?.response?.data?.message || err?.message || "Authentication failed",
