@@ -1,4 +1,16 @@
-import { User, Palette, Info, LogOut } from "lucide-react";
+import {
+  User,
+  Palette,
+  Info,
+  LogOut,
+  KeyRound,
+  ExternalLink,
+  RefreshCw,
+  CheckCircle2,
+  Calendar,
+  Flame,
+  Award,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { useEffect, useState, useCallback } from "react";
@@ -9,10 +21,12 @@ import Loader from "../components/common/Loader";
 import AppShell from "../components/layout/AppShell";
 import SettingsSection from "../components/settings/SettingsSection";
 import SettingsItem from "../components/settings/SettingsItem";
+import LeetcodeConsistencyHeatmap from "../components/settings/LeetcodeConsistencyHeatmap";
 
 const TABS = [
   { id: "account", label: "Account", icon: User },
   { id: "appearance", label: "Appearance", icon: Palette },
+  { id: "password", label: "Password", icon: KeyRound },
   { id: "about", label: "About", icon: Info },
   { id: "danger", label: "Danger Zone", icon: LogOut, isDanger: true },
 ];
@@ -25,14 +39,23 @@ export default function Settings() {
   const { theme, setTheme } = useTheme();
   const [activeTab, setActiveTab] = useState("account");
 
-  const { user, loading, updateProfile, updatePassword } = useSettings();
+  const {
+    user,
+    loading,
+    updateProfile,
+    fetchLeetcodeStats,
+    updatePassword,
+  } = useSettings();
 
   const [profileSaving, setProfileSaving] = useState(false);
   const [passwordSaving, setPasswordSaving] = useState(false);
+  const [leetcodeLoading, setLeetcodeLoading] = useState(false);
+  const [leetcodeStats, setLeetcodeStats] = useState(null);
 
   const [profile, setProfile] = useState({
     name: "",
     email: "",
+    leetcodeUsername: "",
   });
 
   const [security, setSecurity] = useState({
@@ -40,6 +63,25 @@ export default function Settings() {
     newPassword: "",
     confirmPassword: "",
   });
+
+  const loadLeetcodeData = useCallback(
+    async (username) => {
+      if (!username?.trim()) {
+        setLeetcodeStats(null);
+        return;
+      }
+      setLeetcodeLoading(true);
+      try {
+        const stats = await fetchLeetcodeStats(username.trim());
+        setLeetcodeStats(stats);
+      } catch (err) {
+        setLeetcodeStats(null);
+      } finally {
+        setLeetcodeLoading(false);
+      }
+    },
+    [fetchLeetcodeStats],
+  );
 
   const handleProfileChange = useCallback((e) => {
     const { name, value } = e.target;
@@ -58,8 +100,16 @@ export default function Settings() {
       try {
         const targetName = profile.name.trim();
         const targetEmail = profile.email.trim();
+        const targetLeetcode = profile.leetcodeUsername.trim();
 
-        await updateProfile(targetName, targetEmail);
+        const updated = await updateProfile(targetName, targetEmail, targetLeetcode);
+        if (updated) {
+          if (targetLeetcode) {
+            loadLeetcodeData(targetLeetcode);
+          } else {
+            setLeetcodeStats(null);
+          }
+        }
       } catch (error) {
         console.error(
           "[Settings] Update Profile Failure:",
@@ -69,7 +119,7 @@ export default function Settings() {
         setProfileSaving(false);
       }
     },
-    [profile, updateProfile],
+    [profile, updateProfile, loadLeetcodeData],
   );
 
   const handleUpdatePassword = useCallback(
@@ -125,14 +175,28 @@ export default function Settings() {
     if (user) {
       const displayName = user.name || user.username || "";
       const displayEmail = user.email || "";
+      const leetcodeHandle = user.leetcodeUsername || "";
       queueMicrotask(() => {
         setProfile((prev) => {
-          if (prev.name === displayName && prev.email === displayEmail) return prev;
-          return { name: displayName, email: displayEmail };
+          if (
+            prev.name === displayName &&
+            prev.email === displayEmail &&
+            prev.leetcodeUsername === leetcodeHandle
+          ) {
+            return prev;
+          }
+          return {
+            name: displayName,
+            email: displayEmail,
+            leetcodeUsername: leetcodeHandle,
+          };
         });
       });
+      if (leetcodeHandle) {
+        loadLeetcodeData(leetcodeHandle);
+      }
     }
-  }, [user]);
+  }, [user, loadLeetcodeData]);
 
   if (loading) {
     return (
@@ -146,9 +210,9 @@ export default function Settings() {
 
   return (
     <AppShell title="Settings">
-      <div className="max-w-5xl mx-auto px-4 py-8 flex flex-col md:flex-row gap-8">
+      <div className="max-w-6xl w-full mx-auto px-4 py-8 flex flex-col md:flex-row gap-8 min-w-0">
         {/* Sidebar Navigation */}
-        <aside className="w-full md:w-60 shrink-0 flex flex-col gap-1.5">
+        <aside className="w-full md:w-56 shrink-0 flex flex-col gap-1.5">
           {TABS.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -157,22 +221,20 @@ export default function Settings() {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`group relative flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left border cursor-pointer ${
-                  isActive
+                className={`group relative flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left border cursor-pointer ${isActive
                     ? tab.isDanger
                       ? "bg-red-50 border-red-200 text-red-600 dark:bg-red-950/40 dark:border-red-600/40 dark:text-red-400 font-semibold shadow-xs"
                       : "bg-red-50 border-red-200 text-red-600 dark:bg-[#BA3C3C]/15 dark:border-[#BA3C3C]/30 dark:text-red-400 font-semibold shadow-xs"
                     : "border-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900 dark:text-zinc-400 dark:hover:bg-zinc-900/60 dark:hover:text-zinc-200"
-                }`}
+                  }`}
               >
                 <Icon
-                  className={`w-4 h-4 transition-colors duration-200 ${
-                    isActive
+                  className={`w-4 h-4 transition-colors duration-200 ${isActive
                       ? tab.isDanger
                         ? "text-red-600 dark:text-red-500"
                         : "text-red-600 dark:text-red-400"
                       : "text-slate-400 group-hover:text-slate-600 dark:text-zinc-500 dark:group-hover:text-zinc-300"
-                  }`}
+                    }`}
                 />
                 {tab.label}
               </button>
@@ -181,46 +243,85 @@ export default function Settings() {
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 space-y-8">
+        <main className="flex-1 min-w-0 w-full max-w-full space-y-8">
+          {/* ACCOUNT TAB: PROFILE INFORMATION & LEETCODE INTEGRATION */}
           {activeTab === "account" && (
-            <>
+            <div className="space-y-8">
               {/* Profile Section */}
               <SettingsSection
                 title="Profile Information"
-                description="Update your account name and email settings."
+                description="Update your account name, email and connected LeetCode profile."
               >
                 <form
                   onSubmit={handleUpdateProfile}
                   className="divide-y divide-slate-100 dark:divide-zinc-800/60"
                 >
-                  <div className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-slate-700 dark:text-zinc-400">
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        autoComplete="name"
-                        value={profile.name}
-                        onChange={handleProfileChange}
-                        className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none transition-all shadow-2xs"
-                        required
-                      />
+                  <div className="p-6 space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-slate-700 dark:text-zinc-400">
+                          Full Name
+                        </label>
+                        <input
+                          type="text"
+                          name="name"
+                          autoComplete="name"
+                          value={profile.name}
+                          onChange={handleProfileChange}
+                          className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none transition-all shadow-2xs"
+                          required
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-medium text-slate-700 dark:text-zinc-400">
+                          Email Address
+                        </label>
+                        <input
+                          type="email"
+                          name="email"
+                          autoComplete="email"
+                          value={profile.email}
+                          onChange={handleProfileChange}
+                          className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none transition-all shadow-2xs"
+                          required
+                        />
+                      </div>
                     </div>
-                    <div className="space-y-1.5">
-                      <label className="text-xs font-medium text-slate-700 dark:text-zinc-400">
-                        Email Address
-                      </label>
-                      <input
-                        type="email"
-                        name="email"
-                        autoComplete="email"
-                        value={profile.email}
-                        onChange={handleProfileChange}
-                        className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none transition-all shadow-2xs"
-                        required
-                      />
+
+                    {/* LeetCode Account Connection Field */}
+                    <div className="space-y-1.5 pt-2">
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-medium text-slate-700 dark:text-zinc-400 flex items-center gap-1.5">
+                          <span className="w-4 h-4 rounded bg-amber-500/10 text-amber-500 font-bold text-[10px] flex items-center justify-center">
+                            LC
+                          </span>
+                          <span>LeetCode Username</span>
+                        </label>
+                        {profile.leetcodeUsername && (
+                          <button
+                            type="button"
+                            onClick={() => loadLeetcodeData(profile.leetcodeUsername)}
+                            disabled={leetcodeLoading}
+                            className="text-[11px] text-[#E04D4D] hover:underline flex items-center gap-1 cursor-pointer disabled:opacity-50"
+                          >
+                            <RefreshCw className={`w-3 h-3 ${leetcodeLoading ? "animate-spin" : ""}`} />
+                            <span>Sync Stats</span>
+                          </button>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <input
+                          type="text"
+                          name="leetcodeUsername"
+                          value={profile.leetcodeUsername}
+                          onChange={handleProfileChange}
+                          placeholder="e.g. tourist or your_handle"
+                          className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none transition-all shadow-2xs"
+                        />
+                      </div>
+                      <p className="text-[11px] text-slate-500 dark:text-zinc-500">
+                        Add your LeetCode username to display your submission streak, total active days & max streak.
+                      </p>
                     </div>
                   </div>
 
@@ -241,79 +342,95 @@ export default function Settings() {
                 </form>
               </SettingsSection>
 
-              {/* Password Section */}
-              <SettingsSection
-                title="Change Password"
-                description="Change your security credentials to secure your session."
+              {/* LeetCode Consistency & Streak Stats Card */}
+              {leetcodeLoading && !leetcodeStats && (
+                <div className="p-8 rounded-2xl border border-slate-200 dark:border-zinc-800/80 bg-white/50 dark:bg-zinc-950/40 text-center">
+                  <RefreshCw className="w-5 h-5 text-[#E04D4D] animate-spin mx-auto mb-2" />
+                  <p className="text-xs text-slate-500 dark:text-zinc-400 font-medium">
+                    Syncing LeetCode submissions & streak...
+                  </p>
+                </div>
+              )}
+
+              {leetcodeStats && (
+                <LeetcodeConsistencyHeatmap stats={leetcodeStats} />
+              )}
+            </div>
+          )}
+
+          {/* PASSWORD TAB (BEFORE ABOUT) */}
+          {activeTab === "password" && (
+            <SettingsSection
+              title="Change Password"
+              description="Change your security credentials to secure your session."
+            >
+              <form
+                onSubmit={handleUpdatePassword}
+                className="divide-y divide-slate-100 dark:divide-zinc-800/60"
               >
-                <form
-                  onSubmit={handleUpdatePassword}
-                  className="divide-y divide-slate-100 dark:divide-zinc-800/60"
-                >
-                  <div className="p-6 space-y-4">
-                    <div className="space-y-1.5 max-w-md">
+                <div className="p-6 space-y-4">
+                  <div className="space-y-1.5 max-w-md">
+                    <label className="text-xs font-medium text-slate-700 dark:text-zinc-400">
+                      Current Password
+                    </label>
+                    <input
+                      type="password"
+                      name="currentPassword"
+                      autoComplete="current-password"
+                      value={security.currentPassword}
+                      onChange={handleSecurityChange}
+                      placeholder="••••••••"
+                      className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none transition-all shadow-2xs"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
                       <label className="text-xs font-medium text-slate-700 dark:text-zinc-400">
-                        Current Password
+                        New Password
                       </label>
                       <input
                         type="password"
-                        name="currentPassword"
-                        autoComplete="current-password"
-                        value={security.currentPassword}
+                        name="newPassword"
+                        autoComplete="new-password"
+                        value={security.newPassword}
                         onChange={handleSecurityChange}
-                        placeholder="••••••••"
                         className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none transition-all shadow-2xs"
                       />
                     </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-slate-700 dark:text-zinc-400">
-                          New Password
-                        </label>
-                        <input
-                          type="password"
-                          name="newPassword"
-                          autoComplete="new-password"
-                          value={security.newPassword}
-                          onChange={handleSecurityChange}
-                          className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none transition-all shadow-2xs"
-                        />
-                      </div>
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-slate-700 dark:text-zinc-400">
-                          Confirm Password
-                        </label>
-                        <input
-                          type="password"
-                          name="confirmPassword"
-                          autoComplete="new-password"
-                          value={security.confirmPassword}
-                          onChange={handleSecurityChange}
-                          placeholder="Re-enter password"
-                          className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none transition-all shadow-2xs"
-                        />
-                      </div>
+                    <div className="space-y-1.5">
+                      <label className="text-xs font-medium text-slate-700 dark:text-zinc-400">
+                        Confirm Password
+                      </label>
+                      <input
+                        type="password"
+                        name="confirmPassword"
+                        autoComplete="new-password"
+                        value={security.confirmPassword}
+                        onChange={handleSecurityChange}
+                        placeholder="Re-enter password"
+                        className="w-full bg-white dark:bg-zinc-950 border border-slate-200 dark:border-zinc-800/80 focus:border-[#BA3C3C] focus:ring-1 focus:ring-[#BA3C3C]/30 rounded-xl px-3.5 py-2 text-sm text-slate-900 dark:text-zinc-100 placeholder:text-slate-400 dark:placeholder:text-zinc-600 focus:outline-none transition-all shadow-2xs"
+                      />
                     </div>
                   </div>
+                </div>
 
-                  <div className="px-6 py-3.5 bg-slate-50/80 dark:bg-zinc-900/20 border-t border-slate-100 dark:border-zinc-800/60 flex justify-end">
-                    <button
-                      type="submit"
-                      disabled={passwordSaving}
-                      className="px-5 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 text-xs font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
-                    >
-                      {passwordSaving && (
-                        <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                      )}
-                      <span>
-                        {passwordSaving ? "Updating..." : "Update Password"}
-                      </span>
-                    </button>
-                  </div>
-                </form>
-              </SettingsSection>
-            </>
+                <div className="px-6 py-3.5 bg-slate-50/80 dark:bg-zinc-900/20 border-t border-slate-100 dark:border-zinc-800/60 flex justify-end">
+                  <button
+                    type="submit"
+                    disabled={passwordSaving}
+                    className="px-5 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 text-xs font-semibold transition outline-none focus-visible:ring-2 focus-visible:ring-red-400 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
+                  >
+                    {passwordSaving && (
+                      <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    )}
+                    <span>
+                      {passwordSaving ? "Updating..." : "Update Password"}
+                    </span>
+                  </button>
+                </div>
+              </form>
+            </SettingsSection>
           )}
 
           {activeTab === "appearance" && (
@@ -330,22 +447,20 @@ export default function Settings() {
                     <button
                       type="button"
                       onClick={() => setTheme("dark")}
-                      className={`px-3 py-1 rounded-lg font-medium transition-colors cursor-pointer ${
-                        theme === "dark"
+                      className={`px-3 py-1 rounded-lg font-medium transition-colors cursor-pointer ${theme === "dark"
                           ? "bg-white dark:bg-[#BA3C3C]/20 border border-slate-300 dark:border-[#BA3C3C]/30 text-red-600 dark:text-red-400 font-semibold shadow-xs"
                           : "text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
-                      }`}
+                        }`}
                     >
                       Dark
                     </button>
                     <button
                       type="button"
                       onClick={() => setTheme("light")}
-                      className={`px-3 py-1 rounded-lg font-medium transition-colors cursor-pointer ${
-                        theme === "light"
+                      className={`px-3 py-1 rounded-lg font-medium transition-colors cursor-pointer ${theme === "light"
                           ? "bg-white dark:bg-[#BA3C3C]/20 border border-slate-300 dark:border-[#BA3C3C]/30 text-red-600 dark:text-red-400 font-semibold shadow-xs"
                           : "text-slate-600 hover:text-slate-900 dark:text-zinc-400 dark:hover:text-white"
-                      }`}
+                        }`}
                     >
                       Light
                     </button>

@@ -30,6 +30,11 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: "",
   },
+  leetcodeUsername: {
+    type: String,
+    trim: true,
+    default: "",
+  },
   createdAt: {
     type: Date,
     default: Date.now,

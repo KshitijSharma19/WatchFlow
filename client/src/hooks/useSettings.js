@@ -21,7 +21,7 @@ export default function useSettings() {
     }
   }, []);
 
-  const updateProfile = useCallback(async (name, email) => {
+  const updateProfile = useCallback(async (name, email, leetcodeUsername) => {
     try {
       setSaving(true);
 
@@ -29,17 +29,31 @@ export default function useSettings() {
         name: name,
         username: name,
         email: email,
+        leetcodeUsername: leetcodeUsername || "",
       });
 
       setUser(res.data.user);
       toast.success(res.data.message || "Profile updated successfully!");
-      return true;
+      return res.data.user;
     } catch (error) {
       console.error("[Settings] Update Profile", error.message);
       toast.error(error.response?.data?.message ?? "Failed to update profile.");
       return false;
     } finally {
       setSaving(false);
+    }
+  }, []);
+
+  const fetchLeetcodeStats = useCallback(async (username) => {
+    if (!username?.trim()) return null;
+    try {
+      const res = await api.get(`/settings/leetcode/${encodeURIComponent(username.trim())}`);
+      return res.data.stats;
+    } catch (error) {
+      console.error("[Settings] Fetch LeetCode Stats", error.message);
+      const msg = error.response?.data?.message || "Failed to fetch LeetCode statistics";
+      toast.error(msg);
+      return null;
     }
   }, []);
 
@@ -79,6 +93,7 @@ export default function useSettings() {
     saving,
     fetchProfile,
     updateProfile,
+    fetchLeetcodeStats,
     updatePassword,
   };
 }

@@ -5,6 +5,8 @@ import {
   Sun,
   Moon,
   ChevronDown,
+  Settings,
+  LogOut,
 } from "lucide-react";
 import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -184,14 +186,24 @@ export default function TopBar({ title, showBack = false, onMenuClick }) {
                   )}
                 </div>
 
-                {/* Sign Out Action */}
-                <div className="pt-2">
+                {/* Dropdown Menu Items */}
+                <div className="pt-2 space-y-1">
+                  <Link
+                    to="/settings"
+                    onClick={() => setIsDropdownOpen(false)}
+                    className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-sm font-medium text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-neutral-800/60 transition cursor-pointer text-left"
+                  >
+                    <Settings className="w-4 h-4 text-slate-500 dark:text-neutral-400" />
+                    <span>Settings</span>
+                  </Link>
+
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="w-full flex items-center px-2.5 py-2 rounded-lg text-sm font-medium text-slate-700 dark:text-neutral-300 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500/10 transition cursor-pointer text-left"
+                    className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-sm font-medium text-slate-700 dark:text-neutral-300 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-500/10 transition cursor-pointer text-left"
                   >
-                    Sign out
+                    <LogOut className="w-4 h-4 text-slate-500 dark:text-neutral-400" />
+                    <span>Sign out</span>
                   </button>
                 </div>
               </div>

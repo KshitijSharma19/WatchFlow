@@ -4,4 +4,5 @@ module.exports = (user) => ({
   name: user.name || user.username || "",
   email: user.email,
   avatar: user.avatar || "",
+  leetcodeUsername: user.leetcodeUsername || "",
 });

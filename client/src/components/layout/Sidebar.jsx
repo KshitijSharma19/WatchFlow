@@ -61,11 +61,6 @@ export default function Sidebar({ isOpen, setIsOpen }) {
     });
   }
 
-  navItems.push({
-    name: "Settings",
-    icon: Settings,
-    path: "/settings",
-  });
 
   const isItemActive = (item) => {
     if (item.name === "Notes Hub") {
