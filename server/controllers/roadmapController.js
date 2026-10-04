@@ -74,7 +74,7 @@ JSON Schema:
 
     for (const model of geminiModels) {
       try {
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`;
+        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
         const response = await axios.post(
           geminiUrl,
           {
@@ -85,7 +85,13 @@ JSON Schema:
               responseMimeType: "application/json",
             },
           },
-          { timeout: 35000 }
+          {
+            headers: {
+              "Content-Type": "application/json",
+              "x-goog-api-key": geminiApiKey,
+            },
+            timeout: 35000,
+          }
         );
 
         const candidateText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;

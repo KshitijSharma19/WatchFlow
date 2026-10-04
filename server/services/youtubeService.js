@@ -48,10 +48,12 @@ exports.fetchPlaylistMetadata = async (playlistId) => {
   if (cached) return cached;
 
   const apiKey = getApiKey();
-  const url = `${BASE_URL}/playlists?part=snippet,contentDetails&id=${playlistId}&key=${apiKey}`;
+  const url = `${BASE_URL}/playlists?part=snippet,contentDetails&id=${playlistId}`;
 
   try {
-    const response = await axios.get(url);
+    const response = await axios.get(url, {
+      headers: { "x-goog-api-key": apiKey },
+    });
 
     if (!response.data.items || response.data.items.length === 0) {
       throw new Error("PLAYLIST_NOT_FOUND");
@@ -101,9 +103,11 @@ exports.fetchAllPlaylistVideos = async (playlistId) => {
   try {
     while (hasNextPage) {
       const pageParam = nextPageToken ? `&pageToken=${nextPageToken}` : "";
-      const url = `${BASE_URL}/playlistItems?part=snippet,contentDetails&maxResults=50&playlistId=${playlistId}&key=${apiKey}${pageParam}`;
+      const url = `${BASE_URL}/playlistItems?part=snippet,contentDetails&maxResults=50&playlistId=${playlistId}${pageParam}`;
 
-      const response = await axios.get(url);
+      const response = await axios.get(url, {
+        headers: { "x-goog-api-key": apiKey },
+      });
 
       if (response.data.items && response.data.items.length > 0) {
         // Filter out deleted / private videos cleanly
@@ -152,9 +156,11 @@ exports.fetchVideoDurations = async (videoIds) => {
     const chunk = videoIds.slice(i, i + 50);
     const ids = chunk.join(",");
 
-    const url = `${BASE_URL}/videos?part=contentDetails,snippet&id=${ids}&key=${apiKey}`;
+    const url = `${BASE_URL}/videos?part=contentDetails,snippet&id=${ids}`;
     try {
-      const response = await axios.get(url);
+      const response = await axios.get(url, {
+        headers: { "x-goog-api-key": apiKey },
+      });
       if (response.data.items) {
         allVideoItems.push(...response.data.items);
       }

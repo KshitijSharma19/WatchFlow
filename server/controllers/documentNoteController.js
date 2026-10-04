@@ -68,7 +68,6 @@ exports.getAllNotes = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch document notes",
-      error: error.message,
     });
   }
 };
@@ -98,7 +97,6 @@ exports.getNoteById = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to fetch note",
-      error: error.message,
     });
   }
 };
@@ -161,7 +159,6 @@ exports.createNote = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to save note",
-      error: error.message,
     });
   }
 };
@@ -218,7 +215,6 @@ exports.updateNote = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to update note",
-      error: error.message,
     });
   }
 };
@@ -248,7 +244,6 @@ exports.deleteNote = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to delete note",
-      error: error.message,
     });
   }
 };
@@ -425,7 +420,6 @@ Dynamic Programming (Knapsack 0/1) | O(N * W) | O(N * W) | O(N * W) or O(W)`,
     return res.status(500).json({
       success: false,
       message: "Failed to seed sample notes",
-      error: error.message,
     });
   }
 };
@@ -516,7 +510,7 @@ Guidelines:
 
       for (const model of modelsToTry) {
         try {
-          const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+          const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
           const response = await axios.post(
             geminiUrl,
             {
@@ -526,13 +520,19 @@ Guidelines:
                 maxOutputTokens: 2048,
               },
             },
-            { timeout: 25000 }
+            {
+              headers: {
+                "Content-Type": "application/json",
+                "x-goog-api-key": apiKey,
+              },
+              timeout: 25000,
+            }
           );
 
           aiResponseText = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
           if (aiResponseText) break;
         } catch (apiErr) {
-          console.warn(`Model ${model} call failed:`, apiErr?.response?.data || apiErr.message);
+          console.warn(`Model ${model} call failed:`, apiErr?.response?.data?.error?.message || apiErr.message);
         }
       }
 
@@ -558,7 +558,6 @@ Guidelines:
     return res.status(500).json({
       success: false,
       message: "Failed to answer query",
-      error: error.message,
     });
   }
 };
