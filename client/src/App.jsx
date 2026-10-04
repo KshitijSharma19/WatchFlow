@@ -19,6 +19,7 @@ import NotesHub from "./pages/NotesHub";
 import FeedbackPage from "./pages/Feedback";
 
 import ProtectedRoute from "./components/common/ProtectedRoute";
+import ScrollToTop from "./components/common/ScrollToTop";
 
 const PROTECTED_ROUTES = [
   {
@@ -54,6 +55,7 @@ const PROTECTED_ROUTES = [
 export default function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<AuthPage />} />

@@ -49,6 +49,11 @@ export default function SheetDetailPage() {
   const [activeVideoProblem, setActiveVideoProblem] = useState(null);
   const [activeNoteProblem, setActiveNoteProblem] = useState(null);
 
+  // Ensure page always starts at the top (question #1 and header) when opened
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [sheetId]);
+
   // Load from localStorage
   useEffect(() => {
     try {
