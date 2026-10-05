@@ -16,6 +16,7 @@ const noteRoutes = require("./routes/noteRoutes");
 const roadmapRoutes = require("./routes/roadmapRoutes");
 const documentNoteRoutes = require("./routes/documentNoteRoutes");
 const feedbackRoutes = require("./routes/feedbackRoutes");
+const dsaRoutes = require("./routes/dsaRoutes");
 
 const app = express();
 
@@ -41,6 +42,7 @@ app.use("/api/videos", videoRoutes);
 app.use("/api/roadmap", roadmapRoutes);
 app.use("/api/notes-hub", documentNoteRoutes);
 app.use("/api/feedback", feedbackRoutes);
+app.use("/api/dsa", dsaRoutes);
 app.use("/api", noteRoutes);
 
 // Fallback 404 handler

@@ -1,0 +1,70 @@
+{
+  "two-sum": {
+    "title": "Two Sum",
+    "difficulty": "Easy",
+    "category": "Array",
+    "complexity": {
+      "time": "O(N)",
+      "space": "O(N)"
+    },
+    "approach": "One-pass Hash Map: stores value to index mapping to check target complement in O(1) time.",
+    "solutions": {
+      "cpp": "class Solution {\npublic:\n    vector<int> twoSum(vector<int>& nums, int target) {\n        unordered_map<int, int> numMap;\n        for (int i = 0; i < nums.size(); ++i) {\n            int complement = target - nums[i];\n            if (numMap.count(complement)) {\n                return {numMap[complement], i};\n            }\n            numMap[nums[i]] = i;\n        }\n        return {};\n    }\n};",
+      "java": "class Solution {\n    public int[] twoSum(int[] nums, int target) {\n        Map<Integer, Integer> map = new HashMap<>();\n        for (int i = 0; i < nums.length; i++) {\n            int complement = target - nums[i];\n            if (map.containsKey(complement)) {\n                return new int[] { map.get(complement), i };\n            }\n            map.put(nums[i], i);\n        }\n        return new int[0];\n    }\n}",
+      "python": "class Solution:\n    def twoSum(self, nums: list[int], target: int) -> list[int]:\n        seen = {}\n        for i, num in enumerate(nums):\n            complement = target - num\n            if complement in seen:\n                return [seen[complement], i]\n            seen[num] = i\n        return []",
+      "javascript": "/**\n * @param {number[]} nums\n * @param {number} target\n * @return {number[]}\n */\nvar twoSum = function(nums, target) {\n    const map = new Map();\n    for (let i = 0; i < nums.length; i++) {\n        const complement = target - nums[i];\n        if (map.has(complement)) {\n            return [map.get(complement), i];\n        }\n        map.set(nums[i], i);\n    }\n    return [];\n};"
+    },
+    "generatedAt": "2026-10-05T19:48:57.685Z"
+  },
+  "invert-binary-tree": {
+    "title": "Invert Binary Tree",
+    "difficulty": "Easy",
+    "category": "Binary Tree",
+    "complexity": {
+      "time": "O(n)",
+      "space": "O(h)"
+    },
+    "approach": "Recursively swap each node's left and right children using DFS, which visits every node once.",
+    "solutions": {
+      "cpp": "// Definition for a binary tree node.\nstruct TreeNode {\n    int val;\n    TreeNode *left;\n    TreeNode *right;\n    TreeNode() : val(0), left(nullptr), right(nullptr) {}\n    TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}\n    TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}\n};\n\nclass Solution {\npublic:\n    TreeNode* invertTree(TreeNode* root) {\n        if (!root) return nullptr;\n        std::swap(root->left, root->right);\n        invertTree(root->left);\n        invertTree(root->right);\n        return root;\n    }\n};",
+      "java": "// Definition for a binary tree node.\nclass TreeNode {\n    int val;\n    TreeNode left;\n    TreeNode right;\n    TreeNode() {}\n    TreeNode(int val) { this.val = val; }\n    TreeNode(int val, TreeNode left, TreeNode right) {\n        this.val = val;\n        this.left = left;\n        this.right = right;\n    }\n}\n\nclass Solution {\n    public TreeNode invertTree(TreeNode root) {\n        if (root == null) return null;\n        TreeNode temp = root.left;\n        root.left = root.right;\n        root.right = temp;\n        invertTree(root.left);\n        invertTree(root.right);\n        return root;\n    }\n}",
+      "python": "# Definition for a binary tree node.\n# class TreeNode:\n#     def __init__(self, val=0, left=None, right=None):\n#         self.val = val\n#         self.left = left\n#         self.right = right\n\nclass Solution:\n    def invertTree(self, root: TreeNode) -> TreeNode:\n        if not root:\n            return None\n        root.left, root.right = root.right, root.left\n        self.invertTree(root.left)\n        self.invertTree(root.right)\n        return root",
+      "javascript": "/**\n * // Definition for a binary tree node.\n * function TreeNode(val, left, right) {\n *   this.val = (val===undefined ? 0 : val)\n *   this.left = (left===undefined ? null : left)\n *   this.right = (right===undefined ? null : right)\n * }\n */\n/**\n * @param {TreeNode} root\n * @return {TreeNode}\n */\nvar invertTree = function(root) {\n    if (!root) return null;\n    [root.left, root.right] = [root.right, root.left];\n    invertTree(root.left);\n    invertTree(root.right);\n    return root;\n};"
+    },
+    "generatedAt": "2026-10-05T19:53:33.432Z"
+  },
+  "roman-to-integer": {
+    "title": "Roman to Integer",
+    "difficulty": "Easy",
+    "category": "Array / String",
+    "complexity": {
+      "time": "O(n)",
+      "space": "O(1)"
+    },
+    "approach": "Iterate characters, add value unless a smaller value precedes a larger one, in which case subtract.",
+    "solutions": {
+      "cpp": "class Solution {\npublic:\n    int romanToInt(string s) {\n        unordered_map<char, int> m = {{'I',1},{'V',5},{'X',10},{'L',50},{'C',100},{'D',500},{'M',1000}};\n        int total = 0;\n        for (int i = 0; i < s.size(); ++i) {\n            int value = m[s[i]];\n            if (i + 1 < s.size() && value < m[s[i+1]]) {\n                total -= value;\n            } else {\n                total += value;\n            }\n        }\n        return total;\n    }\n};",
+      "java": "class Solution {\n    public int romanToInt(String s) {\n        Map<Character, Integer> map = new HashMap<>();\n        map.put('I', 1);\n        map.put('V', 5);\n        map.put('X', 10);\n        map.put('L', 50);\n        map.put('C', 100);\n        map.put('D', 500);\n        map.put('M', 1000);\n        int total = 0;\n        for (int i = 0; i < s.length(); i++) {\n            int value = map.get(s.charAt(i));\n            if (i + 1 < s.length() && value < map.get(s.charAt(i + 1))) {\n                total -= value;\n            } else {\n                total += value;\n            }\n        }\n        return total;\n    }\n}",
+      "python": "class Solution:\n    def romanToInt(self, s: str) -> int:\n        values = {'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000}\n        total = 0\n        for i, ch in enumerate(s):\n            val = values[ch]\n            if i + 1 < len(s) and val < values[s[i + 1]]:\n                total -= val\n            else:\n                total += val\n        return total",
+      "javascript": "/**\n * @param {string} s\n * @return {number}\n */\nvar romanToInt = function(s) {\n    const map = { 'I': 1, 'V': 5, 'X': 10, 'L': 50, 'C': 100, 'D': 500, 'M': 1000 };\n    let total = 0;\n    for (let i = 0; i < s.length; i++) {\n        const val = map[s[i]];\n        if (i + 1 < s.length && val < map[s[i + 1]]) {\n            total -= val;\n        } else {\n            total += val;\n        }\n    }\n    return total;\n};"
+    },
+    "generatedAt": "2026-10-05T20:02:22.833Z"
+  },
+  "valid-anagram": {
+    "title": "Valid Anagram",
+    "difficulty": "Easy",
+    "category": "String",
+    "complexity": {
+      "time": "O(n)",
+      "space": "O(1)"
+    },
+    "approach": "Count characters of both strings using a fixed-size array and ensure all counts match.",
+    "solutions": {
+      "cpp": "class Solution {\npublic:\n    bool isAnagram(string s, string t) {\n        if (s.size() != t.size()) return false;\n        int count[26] = {0};\n        for (char c : s) ++count[c - 'a'];\n        for (char c : t) {\n            if (--count[c - 'a'] < 0) return false;\n        }\n        return true;\n    }\n};",
+      "java": "class Solution {\n    public boolean isAnagram(String s, String t) {\n        if (s.length() != t.length()) return false;\n        int[] count = new int[26];\n        for (int i = 0; i < s.length(); i++) {\n            count[s.charAt(i) - 'a']++;\n        }\n        for (int i = 0; i < t.length(); i++) {\n            if (--count[t.charAt(i) - 'a'] < 0) return false;\n        }\n        return true;\n    }\n}",
+      "python": "class Solution:\n    def isAnagram(self, s: str, t: str) -> bool:\n        if len(s) != len(t):\n            return False\n        count = [0] * 26\n        for ch in s:\n            count[ord(ch) - ord('a')] += 1\n        for ch in t:\n            idx = ord(ch) - ord('a')\n            count[idx] -= 1\n            if count[idx] < 0:\n                return False\n        return True",
+      "javascript": "/**\n * @param {string} s\n * @param {string} t\n * @return {boolean}\n */\nvar isAnagram = function(s, t) {\n    if (s.length !== t.length) return false;\n    const count = new Array(26).fill(0);\n    for (let i = 0; i < s.length; ++i) {\n        count[s.charCodeAt(i) - 97]++;\n    }\n    for (let i = 0; i < t.length; ++i) {\n        const idx = t.charCodeAt(i) - 97;\n        count[idx]--;\n        if (count[idx] < 0) return false;\n    }\n    return true;\n};"
+    },
+    "generatedAt": "2026-10-05T20:03:27.379Z"
+  }
+}
