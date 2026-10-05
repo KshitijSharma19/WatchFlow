@@ -11,7 +11,6 @@ import {
   Settings,
   MessageSquare,
   LogOut,
-  Code2,
   Sparkles,
 } from "lucide-react";
 import toast from "react-hot-toast";
@@ -176,24 +175,6 @@ export default function Home() {
                   </div>
 
                   <div className="pt-2 space-y-1">
-                    <Link
-                      to="/sheets"
-                      onClick={() => setIsDropdownOpen(false)}
-                      className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-sm font-medium text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-neutral-800/60 transition cursor-pointer text-left"
-                    >
-                      <Code2 className="w-4 h-4 text-slate-500 dark:text-neutral-400" />
-                      <span>Practice Sheets</span>
-                    </Link>
-
-                    <Link
-                      to="/learning"
-                      onClick={() => setIsDropdownOpen(false)}
-                      className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-xl text-sm font-medium text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-neutral-800/60 transition cursor-pointer text-left"
-                    >
-                      <Play className="w-4 h-4 text-slate-500 dark:text-neutral-400" />
-                      <span>Workspace</span>
-                    </Link>
-
                     <Link
                       to="/settings"
                       onClick={() => setIsDropdownOpen(false)}
