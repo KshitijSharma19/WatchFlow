@@ -30,17 +30,17 @@ export default function VideoModal({ problem, isOpen, onClose }) {
     : null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-md animate-in fade-in duration-200">
       <div
-        className="relative w-full max-w-4xl bg-[#0f0f13] border border-neutral-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+        className="relative w-full max-w-4xl bg-[#0f0f13] border border-neutral-800 rounded-2xl shadow-2xl overflow-hidden flex flex-col max-h-[92vh]"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-4 px-6 border-b border-neutral-800/80 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
-            <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
-              {problem.title} · Video Walkthrough
+        <div className="p-3.5 sm:p-4 px-4 sm:px-6 border-b border-neutral-800/80 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shrink-0" />
+            <h3 className="text-sm sm:text-lg font-bold text-white tracking-tight truncate">
+              {problem.title} · Walkthrough
             </h3>
           </div>
 

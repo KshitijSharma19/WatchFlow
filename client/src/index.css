@@ -45,7 +45,11 @@
     color-scheme: dark;
   }
 
+  html,
   body {
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
     background-color: var(--bg-main);
     color: var(--text-main);
     transition: background-color 0.25s ease, color 0.25s ease;

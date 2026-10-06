@@ -42,17 +42,17 @@ export default function SheetsPage() {
 
   return (
     <AppShell title="Practice Sheets">
-      <div className="w-full max-w-[1720px] mx-auto px-4 sm:px-8 lg:px-12 py-8 sm:py-12">
+      <div className="w-full max-w-[1720px] mx-auto px-3 sm:px-8 lg:px-12 py-6 sm:py-12">
         {/* HERO WITH LIVE PRACTICE SHEET PREVIEW */}
-        <section className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center pb-16 lg:pb-24 border-b border-slate-200 dark:border-neutral-900">
+        <section className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center pb-12 lg:pb-24 border-b border-slate-200 dark:border-neutral-900">
           {/* Left Column: Headline and Call to Actions */}
-          <div className="lg:col-span-6 xl:col-span-7 space-y-6">
+          <div className="lg:col-span-6 xl:col-span-7 space-y-5 sm:space-y-6">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-[#E04D4D] text-xs font-semibold tracking-wide">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Practice sheets</span>
             </div>
 
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.12]">
+            <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.15]">
               One topic at a time, <br className="hidden sm:inline" />
               solved three ways.
             </h1>
@@ -62,11 +62,11 @@ export default function SheetsPage() {
               opens its clean solution in C++, Java, Python and plays the video walkthrough.
             </p>
 
-            <div className="flex items-center gap-3.5 pt-2 flex-wrap">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
               <button
                 type="button"
                 onClick={() => scrollToSection("dsa-sheets")}
-                className="flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 hover:border-red-500/50 font-semibold text-sm px-6 py-3.5 rounded-xl shadow-xs active:scale-[0.98] transition cursor-pointer"
+                className="flex items-center justify-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 hover:border-red-500/50 font-semibold text-sm px-6 py-3.5 rounded-xl shadow-xs active:scale-[0.98] transition cursor-pointer"
               >
                 <span>Open the sheet</span>
                 <ArrowRight className="w-4 h-4" />
@@ -75,7 +75,7 @@ export default function SheetsPage() {
               <button
                 type="button"
                 onClick={() => scrollToSection("how-a-row-works")}
-                className="flex items-center gap-2 bg-white/80 dark:bg-neutral-900 hover:bg-slate-100 dark:hover:bg-neutral-800 border border-slate-200 dark:border-neutral-800 text-slate-800 dark:text-neutral-200 font-semibold text-sm px-5 py-3.5 rounded-xl transition cursor-pointer"
+                className="flex items-center justify-center gap-2 bg-white/80 dark:bg-neutral-900 hover:bg-slate-100 dark:hover:bg-neutral-800 border border-slate-200 dark:border-neutral-800 text-slate-800 dark:text-neutral-200 font-semibold text-sm px-5 py-3.5 rounded-xl transition cursor-pointer"
               >
                 <span>See what is inside</span>
               </button>
@@ -164,7 +164,7 @@ export default function SheetsPage() {
 
         {/* SECTION 3: DSA SHEETS GRID */}
         <section id="dsa-sheets" className="pt-16 lg:pt-20">
-          <div className="flex items-center justify-between mb-8 pb-3 border-b border-slate-200 dark:border-neutral-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-0 mb-6 sm:mb-8 pb-3 border-b border-slate-200 dark:border-neutral-800">
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-neutral-400">
               SHEETS
             </span>
@@ -173,7 +173,7 @@ export default function SheetsPage() {
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             {SHEETS_DATA.map((sheet) => {
               const solvedCount = getSheetSolvedCount(sheet);
               const total = sheet.problemCount || sheet.problems.length;
@@ -183,7 +183,7 @@ export default function SheetsPage() {
                 <div
                   key={sheet.id}
                   onClick={() => navigate(`/sheets/${sheet.id}`)}
-                  className="group relative bg-white/90 dark:bg-[#0c0c11]/85 border border-slate-200 dark:border-neutral-800/90 rounded-2xl p-7 sm:p-8 backdrop-blur-xl transition-all duration-300 hover:border-red-500/40 hover:shadow-[0_4px_30px_rgba(224,77,77,0.15)] hover:-translate-y-0.5 cursor-pointer flex flex-col justify-between"
+                  className="group relative bg-white/90 dark:bg-[#0c0c11]/85 border border-slate-200 dark:border-neutral-800/90 rounded-2xl p-5 sm:p-8 backdrop-blur-xl transition-all duration-300 hover:border-red-500/40 hover:shadow-[0_4px_30px_rgba(224,77,77,0.15)] hover:-translate-y-0.5 cursor-pointer flex flex-col justify-between"
                 >
                   <div>
                     <div className="flex items-start justify-between gap-3 mb-3">

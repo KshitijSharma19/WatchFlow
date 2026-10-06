@@ -965,7 +965,7 @@ export default function RoadmapPage() {
                 </div>
 
                 {/* Generation Action */}
-                <div className="pt-4 flex items-center gap-4 flex-wrap">
+                <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                   <button
                     type="button"
                     disabled={isGeneratingAi}
@@ -974,7 +974,7 @@ export default function RoadmapPage() {
                         ? handleBuildDsaRoadmap
                         : handleBuildAiRoadmap
                     }
-                    className="flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 hover:border-red-500/50 font-semibold text-sm sm:text-base px-8 py-3.5 rounded-xl shadow-xs active:scale-[0.98] transition cursor-pointer disabled:opacity-50"
+                    className="w-full sm:w-auto justify-center flex items-center gap-2 bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 hover:border-red-500/50 font-semibold text-sm sm:text-base px-8 py-3.5 rounded-xl shadow-xs active:scale-[0.98] transition cursor-pointer disabled:opacity-50"
                   >
                     {isGeneratingAi ? (
                       <>

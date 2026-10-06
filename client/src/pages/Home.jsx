@@ -12,6 +12,11 @@ import {
   MessageSquare,
   LogOut,
   Sparkles,
+  Menu,
+  X,
+  Compass,
+  Code2,
+  Tv,
 } from "lucide-react";
 import toast from "react-hot-toast";
 import SpaceWarpBackground from "../components/common/SpaceWarpBackground";
@@ -25,6 +30,7 @@ export default function Home() {
   const { isDark, toggleTheme } = useTheme();
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const closeTimeoutRef = useRef(null);
   const dropdownRef = useRef(null);
 
@@ -117,8 +123,8 @@ export default function Home() {
         </nav>
 
         {/* Right Action Items */}
-        <div className="flex items-center gap-2 sm:gap-3">
-          {/* Minimal Theme Toggle Button (Matching Website Aesthetic) */}
+        <div className="flex items-center gap-1.5 sm:gap-3">
+          {/* Minimal Theme Toggle Button */}
           <button
             type="button"
             onClick={toggleTheme}
@@ -137,7 +143,7 @@ export default function Home() {
           {isAuthenticated ? (
             <div
               ref={dropdownRef}
-              className="relative"
+              className="relative hidden sm:block"
               onMouseEnter={handleMouseEnter}
               onMouseLeave={handleMouseLeave}
             >
@@ -208,16 +214,112 @@ export default function Home() {
           ) : (
             <Link
               to="/signup"
-              className="px-4 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 hover:border-red-500/50 text-xs sm:text-sm font-semibold shadow-xs transition duration-200 active:scale-[0.98]"
+              className="hidden sm:inline-flex px-4 py-2 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 hover:border-red-500/50 text-xs sm:text-sm font-semibold shadow-xs transition duration-200 active:scale-[0.98]"
             >
               Get started
             </Link>
           )}
+
+          {/* Mobile Navigation Toggle (Hamburger / Close) */}
+          <button
+            type="button"
+            onClick={() => setMobileMenuOpen((prev) => !prev)}
+            aria-label="Toggle navigation menu"
+            className="md:hidden p-2 rounded-xl border border-slate-300/80 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/80 text-slate-700 dark:text-neutral-300 hover:text-slate-900 dark:hover:text-white transition cursor-pointer shadow-xs"
+          >
+            {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          </button>
         </div>
       </header>
 
-      {/* Main Hero Section: Fits 100% of the desktop screen height */}
-      <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 h-[calc(100vh-70px)] min-h-[580px] max-h-[760px] flex items-center justify-center">
+      {/* Mobile Drawer Menu */}
+      {mobileMenuOpen && (
+        <div className="relative z-30 md:hidden px-4 pb-4 animate-in fade-in slide-in-from-top-2 duration-200">
+          <div className="rounded-2xl bg-white/95 dark:bg-[#0f0f13]/95 border border-slate-200 dark:border-neutral-800 p-4 shadow-xl backdrop-blur-xl space-y-3">
+            <div className="grid grid-cols-1 gap-1.5 font-medium text-sm">
+              <Link
+                to="/learning"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-800 dark:text-neutral-200 hover:bg-slate-100 dark:hover:bg-neutral-800/80 transition"
+              >
+                <Tv className="w-4 h-4 text-red-500" />
+                <span>Learning Dashboard</span>
+              </Link>
+              <Link
+                to="/sheets"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-800 dark:text-neutral-200 hover:bg-slate-100 dark:hover:bg-neutral-800/80 transition"
+              >
+                <Code2 className="w-4 h-4 text-[#E04D4D]" />
+                <span>Practice Sheets</span>
+              </Link>
+              <Link
+                to="/roadmap"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-800 dark:text-neutral-200 hover:bg-slate-100 dark:hover:bg-neutral-800/80 transition"
+              >
+                <Compass className="w-4 h-4 text-emerald-500" />
+                <span>AI Roadmap</span>
+              </Link>
+            </div>
+
+            <div className="pt-3 border-t border-slate-100 dark:border-neutral-800/80">
+              {isAuthenticated ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2.5 px-2 py-1">
+                    <div className="w-7 h-7 rounded-md bg-amber-100 dark:bg-[#3d2014] flex items-center justify-center text-amber-800 dark:text-[#f59e0b] font-bold text-xs border border-amber-200 dark:border-amber-800/40">
+                      {initial}
+                    </div>
+                    <div className="truncate min-w-0">
+                      <p className="text-xs font-bold text-slate-900 dark:text-white truncate">{displayName}</p>
+                      {displayEmail && <p className="text-[10px] text-slate-500 dark:text-neutral-400 truncate">{displayEmail}</p>}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2 pt-1 text-xs font-semibold">
+                    <Link
+                      to="/settings"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-slate-100 dark:bg-neutral-800 text-slate-700 dark:text-neutral-200"
+                    >
+                      <Settings className="w-3.5 h-3.5" />
+                      <span>Settings</span>
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={handleLogout}
+                      className="flex items-center justify-center gap-1.5 py-2 rounded-xl bg-red-500/10 text-red-600 dark:text-red-400"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      <span>Sign out</span>
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-2 text-xs font-semibold">
+                  <Link
+                    to="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-center py-2.5 rounded-xl border border-slate-200 dark:border-neutral-800 text-slate-800 dark:text-neutral-200"
+                  >
+                    Log in
+                  </Link>
+                  <Link
+                    to="/signup"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center justify-center py-2.5 rounded-xl bg-red-500/15 text-[#E04D4D] dark:text-red-400 border border-red-500/30"
+                  >
+                    Get started
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Hero Section: Fits 100% of the desktop screen height, naturally flows on mobile */}
+      <section className="relative z-10 max-w-7xl mx-auto px-4 sm:px-8 min-h-[calc(100vh-70px)] lg:h-[calc(100vh-70px)] lg:max-h-[820px] py-8 sm:py-12 lg:py-0 flex items-center justify-center">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-8 items-center w-full my-auto">
           {/* Left Column: Headline, Subtitle & Original Red Theme CTAs */}
           <div className="lg:col-span-5 xl:col-span-5 text-left space-y-4 sm:space-y-5">
@@ -285,7 +387,7 @@ export default function Home() {
       {/* Features & Capabilities Section*/}
       <section
         id="features"
-        className="relative z-10 min-h-screen flex flex-col justify-between max-w-7xl mx-auto px-4 sm:px-8 pt-8 sm:pt-10 pb-4 sm:pb-6 border-t border-slate-200 dark:border-white/10"
+        className="relative z-10 min-h-[calc(100vh-70px)] flex flex-col justify-between max-w-7xl mx-auto px-4 sm:px-8 py-12 sm:py-16 border-t border-slate-200 dark:border-white/10"
       >
         <div className="my-auto space-y-6 sm:space-y-8">
           <div className="text-center max-w-3xl mx-auto space-y-2.5">

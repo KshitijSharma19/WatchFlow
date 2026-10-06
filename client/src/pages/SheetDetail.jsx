@@ -195,30 +195,30 @@ export default function SheetDetailPage() {
           </div>
 
           {/* Stats Badges */}
-          <div className="flex items-center gap-6 sm:gap-8 shrink-0 bg-white/60 dark:bg-neutral-900/60 p-3 px-5 rounded-2xl border border-slate-200 dark:border-neutral-800">
+          <div className="grid grid-cols-3 sm:flex items-center gap-2 sm:gap-8 w-full sm:w-auto justify-around bg-white/60 dark:bg-neutral-900/60 p-3 px-4 sm:px-5 rounded-2xl border border-slate-200 dark:border-neutral-800">
             <div className="text-center">
-              <span className="block text-[11px] text-slate-400 dark:text-neutral-500 uppercase tracking-wider">
+              <span className="block text-[10px] sm:text-[11px] text-slate-400 dark:text-neutral-500 uppercase tracking-wider">
                 Problems
               </span>
-              <span className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+              <span className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">
                 {totalProblems}
               </span>
             </div>
 
             <div className="text-center">
-              <span className="block text-[11px] text-slate-400 dark:text-neutral-500 uppercase tracking-wider">
+              <span className="block text-[10px] sm:text-[11px] text-slate-400 dark:text-neutral-500 uppercase tracking-wider">
                 Remaining
               </span>
-              <span className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+              <span className="text-lg sm:text-2xl font-bold text-slate-900 dark:text-white">
                 {Math.max(totalProblems - solvedCount, 0)}
               </span>
             </div>
 
             <div className="text-center">
-              <span className="block text-[11px] text-slate-400 dark:text-neutral-500 uppercase tracking-wider">
+              <span className="block text-[10px] sm:text-[11px] text-slate-400 dark:text-neutral-500 uppercase tracking-wider">
                 Done
               </span>
-              <span className="text-xl sm:text-2xl font-bold text-[#E04D4D]">
+              <span className="text-lg sm:text-2xl font-bold text-[#E04D4D]">
                 {solvedCount}/{totalProblems}
               </span>
             </div>
@@ -290,198 +290,352 @@ export default function SheetDetailPage() {
               <option value="starred">⭐ Revision List</option>
             </select>
           </div>
-        </div>
+        </div>        {/* Problems Display: Mobile Cards (< md) & Desktop Table (>= md) */}
+        {filteredProblems.length === 0 ? (
+          <div className="w-full bg-white/95 dark:bg-[#0c0c11]/90 border border-slate-200 dark:border-neutral-800/80 rounded-2xl p-12 text-center text-slate-400 dark:text-neutral-500 shadow-sm dark:shadow-2xl">
+            No problems match your current search and filters.
+          </div>
+        ) : (
+          <>
+            {/* MOBILE VIEW: Problem Cards (< md) */}
+            <div className="block md:hidden space-y-3">
+              {filteredProblems.map((problem, index) => {
+                const isSolved = !!solvedMap[problem.id];
+                const isStarred = !!starredMap[problem.id];
+                const hasNote = !!notesMap[problem.id];
+                const hasCustomVideo = !!customVideoMap[problem.id];
+                const hasPlayableVideo = hasCustomVideo || (problem.hasVideo && !!problem.youtubeId);
 
-        {/* Problems Table */}
-        <div className="w-full bg-white/95 dark:bg-[#0c0c11]/90 border border-slate-200 dark:border-neutral-800/80 rounded-2xl overflow-hidden shadow-sm dark:shadow-2xl">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-slate-200 dark:border-neutral-800/80 bg-slate-50/70 dark:bg-neutral-950/60 text-[11px] uppercase tracking-wider text-slate-400 dark:text-neutral-500 font-semibold select-none">
-                  <th className="py-3 px-4 w-12 text-center">Status</th>
-                  <th className="py-3 px-3 w-12 text-center">#</th>
-                  <th className="py-3 px-4">Problem</th>
-                  <th className="py-3 px-4 text-center w-28">Solution</th>
-                  <th className="py-3 px-4 text-center w-40">Video</th>
-                  <th className="py-3 px-4 text-center w-28">LeetCode</th>
-                  <th className="py-3 px-4 text-center w-24">Notes</th>
-                </tr>
-              </thead>
+                return (
+                  <div
+                    key={problem.id}
+                    className={`rounded-2xl border p-4 transition-all duration-150 ${
+                      isSolved
+                        ? "bg-slate-50/70 dark:bg-neutral-900/30 border-slate-200/60 dark:border-neutral-800/60"
+                        : "bg-white dark:bg-[#0c0c11]/90 border-slate-200 dark:border-neutral-800/80 shadow-xs"
+                    }`}
+                  >
+                    {/* Header Row: Checkbox, Number & Title, Star, Difficulty */}
+                    <div className="flex items-start justify-between gap-3 mb-3">
+                      <div className="flex items-start gap-2.5 min-w-0 flex-1">
+                        <button
+                          type="button"
+                          onClick={() => toggleSolved(problem.id)}
+                          aria-label="Toggle solved"
+                          className={`w-6 h-6 rounded-lg flex items-center justify-center border transition-all cursor-pointer shrink-0 mt-0.5 ${
+                            isSolved
+                              ? "bg-[#E04D4D] border-[#E04D4D] text-white shadow-xs"
+                              : "border-slate-300 dark:border-neutral-700 bg-transparent"
+                          }`}
+                        >
+                          {isSolved && <Check className="w-3.5 h-3.5 stroke-[3]" />}
+                        </button>
 
-              <tbody className="divide-y divide-slate-100 dark:divide-neutral-800/60 text-xs sm:text-sm">
-                {filteredProblems.length === 0 ? (
-                  <tr>
-                    <td colSpan={7} className="text-center py-12 text-slate-400 dark:text-neutral-500">
-                      No problems match your current search and filters.
-                    </td>
-                  </tr>
-                ) : (
-                  filteredProblems.map((problem, index) => {
-                    const isSolved = !!solvedMap[problem.id];
-                    const isStarred = !!starredMap[problem.id];
-                    const hasNote = !!notesMap[problem.id];
-                    const hasCustomVideo = !!customVideoMap[problem.id];
-                    const hasPlayableVideo = hasCustomVideo || (problem.hasVideo && !!problem.youtubeId);
-
-                    return (
-                      <tr
-                        key={problem.id}
-                        className={`transition-colors duration-150 ${
-                          isSolved
-                            ? "bg-slate-50/40 dark:bg-neutral-900/20"
-                            : "hover:bg-slate-50/80 dark:hover:bg-neutral-900/40"
-                        }`}
-                      >
-                        {/* Checkbox */}
-                        <td className="py-3.5 px-4 text-center">
-                          <button
-                            type="button"
-                            onClick={() => toggleSolved(problem.id)}
-                            className={`w-5 h-5 rounded-md flex items-center justify-center border transition-all cursor-pointer mx-auto ${
-                              isSolved
-                                ? "bg-[#E04D4D] border-[#E04D4D] text-white shadow-xs"
-                                : "border-slate-300 dark:border-neutral-700 hover:border-red-400 dark:hover:border-neutral-500 bg-transparent"
-                            }`}
-                          >
-                            {isSolved && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-                          </button>
-                        </td>
-
-                        {/* Number */}
-                        <td className="py-3.5 px-3 text-center text-xs font-mono text-slate-400 dark:text-neutral-500">
-                          {problem.number || String(index + 1).padStart(2, "0")}
-                        </td>
-
-                        {/* Problem Title & Badges */}
-                        <td className="py-3.5 px-4">
-                          <div className="flex items-center gap-2.5 flex-wrap">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5 flex-wrap">
+                            <span className="text-[11px] font-mono text-slate-400 dark:text-neutral-500">
+                              #{problem.number || String(index + 1).padStart(2, "0")}
+                            </span>
                             <span
-                              className={`font-medium transition-colors ${
+                              className={`text-sm font-semibold leading-snug ${
                                 isSolved
                                   ? "text-slate-400 dark:text-neutral-400 line-through decoration-slate-400/50"
-                                  : "text-slate-900 dark:text-white hover:text-[#E04D4D]"
+                                  : "text-slate-900 dark:text-white"
                               }`}
                             >
                               {problem.title}
                             </span>
+                          </div>
 
-                            {/* Difficulty Badge */}
-                            <span
-                              className={`text-[10px] px-2 py-0.5 rounded-md font-semibold uppercase tracking-wider ${
-                                problem.difficulty === "Easy"
-                                  ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
-                                  : problem.difficulty === "Medium"
-                                  ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
-                                  : "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20"
-                              }`}
-                            >
-                              {problem.difficulty}
+                          {problem.category && (
+                            <span className="text-[10px] text-slate-500 dark:text-neutral-400 mt-0.5 block">
+                              {problem.category}
                             </span>
+                          )}
+                        </div>
+                      </div>
 
-                            {/* Star Revision Bookmark */}
+                      {/* Difficulty & Bookmark */}
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <span
+                          className={`text-[10px] px-2 py-0.5 rounded-md font-semibold uppercase tracking-wider ${
+                            problem.difficulty === "Easy"
+                              ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                              : problem.difficulty === "Medium"
+                              ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                              : "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20"
+                          }`}
+                        >
+                          {problem.difficulty}
+                        </span>
+
+                        <button
+                          type="button"
+                          onClick={(e) => toggleStarred(problem.id, e)}
+                          aria-label="Bookmark problem"
+                          className="p-1 rounded text-slate-400 hover:text-amber-400 dark:text-neutral-500 dark:hover:text-amber-400 transition"
+                        >
+                          <Star
+                            className={`w-4 h-4 ${
+                              isStarred ? "fill-amber-400 text-amber-400" : "stroke-[1.5]"
+                            }`}
+                          />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons Row */}
+                    <div className="grid grid-cols-4 gap-2 pt-2 border-t border-slate-100 dark:border-neutral-800/60">
+                      {/* Code Solution Button */}
+                      <button
+                        type="button"
+                        onClick={() => setActiveSolutionProblem(problem)}
+                        className="flex items-center justify-center gap-1 py-2 px-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 border border-slate-200 dark:border-neutral-800 text-slate-800 dark:text-neutral-200 text-xs font-mono font-medium transition cursor-pointer"
+                      >
+                        <Code className="w-3.5 h-3.5 text-[#E04D4D]" />
+                        <span>Code</span>
+                      </button>
+
+                      {/* Video Walkthrough Button */}
+                      {hasPlayableVideo ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const activeProb = hasCustomVideo
+                              ? { ...problem, youtubeId: customVideoMap[problem.id] }
+                              : problem;
+                            setActiveVideoProblem(activeProb);
+                          }}
+                          className="flex items-center justify-center gap-1 py-2 px-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 border border-slate-200 dark:border-neutral-800 text-slate-800 dark:text-neutral-200 text-xs font-medium transition cursor-pointer"
+                        >
+                          <Play className="w-3 h-3 text-[#E04D4D] fill-[#E04D4D]" />
+                          <span>Video</span>
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={() => handleAddCustomVideo(problem.id)}
+                          className="flex items-center justify-center gap-1 py-2 px-1 rounded-xl bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-slate-400 dark:text-neutral-500 text-xs font-medium cursor-pointer"
+                        >
+                          <Plus className="w-3 h-3" />
+                          <span>Video</span>
+                        </button>
+                      )}
+
+                      {/* LeetCode Solve Link */}
+                      <a
+                        href={problem.leetcodeUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-center gap-1 py-2 px-1 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 border border-slate-200 dark:border-neutral-800 text-slate-800 dark:text-neutral-200 text-xs font-medium hover:text-[#E04D4D] transition"
+                      >
+                        <span>Solve</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+
+                      {/* Notes Button */}
+                      <button
+                        type="button"
+                        onClick={() => setActiveNoteProblem(problem)}
+                        className={`flex items-center justify-center gap-1 py-2 px-1 rounded-xl border text-xs font-medium transition cursor-pointer ${
+                          hasNote
+                            ? "bg-amber-500/10 border-amber-500/30 text-amber-500"
+                            : "bg-slate-100 dark:bg-neutral-900 border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300"
+                        }`}
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        <span>Note</span>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* DESKTOP VIEW: Full 7-Column Table (>= md) */}
+            <div className="hidden md:block w-full bg-white/95 dark:bg-[#0c0c11]/90 border border-slate-200 dark:border-neutral-800/80 rounded-2xl overflow-hidden shadow-sm dark:shadow-2xl">
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-200 dark:border-neutral-800/80 bg-slate-50/70 dark:bg-neutral-950/60 text-[11px] uppercase tracking-wider text-slate-400 dark:text-neutral-500 font-semibold select-none">
+                      <th className="py-3 px-4 w-12 text-center">Status</th>
+                      <th className="py-3 px-3 w-12 text-center">#</th>
+                      <th className="py-3 px-4">Problem</th>
+                      <th className="py-3 px-4 text-center w-28">Solution</th>
+                      <th className="py-3 px-4 text-center w-40">Video</th>
+                      <th className="py-3 px-4 text-center w-28">LeetCode</th>
+                      <th className="py-3 px-4 text-center w-24">Notes</th>
+                    </tr>
+                  </thead>
+
+                  <tbody className="divide-y divide-slate-100 dark:divide-neutral-800/60 text-xs sm:text-sm">
+                    {filteredProblems.map((problem, index) => {
+                      const isSolved = !!solvedMap[problem.id];
+                      const isStarred = !!starredMap[problem.id];
+                      const hasNote = !!notesMap[problem.id];
+                      const hasCustomVideo = !!customVideoMap[problem.id];
+                      const hasPlayableVideo = hasCustomVideo || (problem.hasVideo && !!problem.youtubeId);
+
+                      return (
+                        <tr
+                          key={problem.id}
+                          className={`transition-colors duration-150 ${
+                            isSolved
+                              ? "bg-slate-50/40 dark:bg-neutral-900/20"
+                              : "hover:bg-slate-50/80 dark:hover:bg-neutral-900/40"
+                          }`}
+                        >
+                          {/* Checkbox */}
+                          <td className="py-3.5 px-4 text-center">
                             <button
                               type="button"
-                              onClick={(e) => toggleStarred(problem.id, e)}
-                              className="p-1 rounded text-slate-400 hover:text-amber-400 dark:text-neutral-600 dark:hover:text-amber-400 transition cursor-pointer"
-                              title={isStarred ? "Remove from revision" : "Bookmark for revision"}
+                              onClick={() => toggleSolved(problem.id)}
+                              className={`w-5 h-5 rounded-md flex items-center justify-center border transition-all cursor-pointer mx-auto ${
+                                isSolved
+                                  ? "bg-[#E04D4D] border-[#E04D4D] text-white shadow-xs"
+                                  : "border-slate-300 dark:border-neutral-700 hover:border-red-400 dark:hover:border-neutral-500 bg-transparent"
+                              }`}
                             >
-                              <Star
-                                className={`w-3.5 h-3.5 ${
-                                  isStarred
-                                    ? "fill-amber-400 text-amber-400"
-                                    : "stroke-[1.5]"
-                                }`}
-                              />
+                              {isSolved && <Check className="w-3.5 h-3.5 stroke-[3]" />}
                             </button>
-                          </div>
-                        </td>
+                          </td>
 
-                        {/* Solution Column */}
-                        <td className="py-3.5 px-4 text-center">
-                          <button
-                            type="button"
-                            onClick={() => setActiveSolutionProblem(problem)}
-                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 border border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 text-xs font-mono transition cursor-pointer"
-                          >
-                            <span>&#123; &#125;</span>
-                            <span>code</span>
-                          </button>
-                        </td>
+                          {/* Number */}
+                          <td className="py-3.5 px-3 text-center text-xs font-mono text-slate-400 dark:text-neutral-500">
+                            {problem.number || String(index + 1).padStart(2, "0")}
+                          </td>
 
-                        {/* Video Column */}
-                        <td className="py-3.5 px-4 text-center">
-                          <div className="inline-flex items-center gap-1.5">
-                            {hasPlayableVideo ? (
+                          {/* Problem Title & Badges */}
+                          <td className="py-3.5 px-4">
+                            <div className="flex items-center gap-2.5 flex-wrap">
+                              <span
+                                className={`font-medium transition-colors ${
+                                  isSolved
+                                    ? "text-slate-400 dark:text-neutral-400 line-through decoration-slate-400/50"
+                                    : "text-slate-900 dark:text-white hover:text-[#E04D4D]"
+                                }`}
+                              >
+                                {problem.title}
+                              </span>
+
+                              {/* Difficulty Badge */}
+                              <span
+                                className={`text-[10px] px-2 py-0.5 rounded-md font-semibold uppercase tracking-wider ${
+                                  problem.difficulty === "Easy"
+                                    ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20"
+                                    : problem.difficulty === "Medium"
+                                    ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20"
+                                    : "bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20"
+                                }`}
+                              >
+                                {problem.difficulty}
+                              </span>
+
+                              {/* Star Revision Bookmark */}
                               <button
                                 type="button"
-                                onClick={() => {
-                                  const activeProb = hasCustomVideo
-                                    ? { ...problem, youtubeId: customVideoMap[problem.id] }
-                                    : problem;
-                                  setActiveVideoProblem(activeProb);
-                                }}
-                                className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 border border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 text-xs font-medium transition cursor-pointer"
+                                onClick={(e) => toggleStarred(problem.id, e)}
+                                className="p-1 rounded text-slate-400 hover:text-amber-400 dark:text-neutral-600 dark:hover:text-amber-400 transition cursor-pointer"
+                                title={isStarred ? "Remove from revision" : "Bookmark for revision"}
                               >
-                                <Play className="w-3 h-3 text-[#E04D4D] fill-[#E04D4D]" />
-                                <span>Watch</span>
+                                <Star
+                                  className={`w-3.5 h-3.5 ${
+                                    isStarred
+                                      ? "fill-amber-400 text-amber-400"
+                                      : "stroke-[1.5]"
+                                  }`}
+                                />
                               </button>
-                            ) : (
-                              <span className="text-xs text-slate-400 dark:text-neutral-600 px-2 select-none">
-                                —
-                              </span>
-                            )}
+                            </div>
+                          </td>
 
+                          {/* Solution Column */}
+                          <td className="py-3.5 px-4 text-center">
                             <button
                               type="button"
-                              onClick={() => handleAddCustomVideo(problem.id)}
-                              className={`p-1.5 rounded-lg border text-xs transition cursor-pointer ${
-                                hasCustomVideo
-                                  ? "bg-red-500/10 border-red-500/30 text-[#E04D4D]"
-                                  : "bg-slate-100 dark:bg-neutral-900 border-slate-200 dark:border-neutral-800 text-slate-500 dark:text-neutral-500 hover:text-slate-900 dark:hover:text-white"
-                              }`}
-                              title={hasCustomVideo ? "Edit custom video" : "Add custom video"}
+                              onClick={() => setActiveSolutionProblem(problem)}
+                              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 border border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 text-xs font-mono transition cursor-pointer"
                             >
-                              <Plus className="w-3 h-3" />
+                              <span>&#123; &#125;</span>
+                              <span>code</span>
                             </button>
-                          </div>
-                        </td>
+                          </td>
 
-                        {/* LeetCode Column */}
-                        <td className="py-3.5 px-4 text-center">
-                          <a
-                            href={problem.leetcodeUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 border border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 text-xs font-medium hover:text-[#E04D4D] transition"
-                          >
-                            <span>Solve</span>
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
-                        </td>
+                          {/* Video Column */}
+                          <td className="py-3.5 px-4 text-center">
+                            <div className="inline-flex items-center gap-1.5">
+                              {hasPlayableVideo ? (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    const activeProb = hasCustomVideo
+                                      ? { ...problem, youtubeId: customVideoMap[problem.id] }
+                                      : problem;
+                                    setActiveVideoProblem(activeProb);
+                                  }}
+                                  className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 border border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 text-xs font-medium transition cursor-pointer"
+                                >
+                                  <Play className="w-3 h-3 text-[#E04D4D] fill-[#E04D4D]" />
+                                  <span>Watch</span>
+                                </button>
+                              ) : (
+                                <span className="text-xs text-slate-400 dark:text-neutral-600 px-2 select-none">
+                                  —
+                                </span>
+                              )}
 
-                        {/* Notes Column (Strivers feature) */}
-                        <td className="py-3.5 px-4 text-center">
-                          <button
-                            type="button"
-                            onClick={() => setActiveNoteProblem(problem)}
-                            className={`p-1.5 rounded-lg border text-xs transition cursor-pointer inline-flex items-center justify-center ${
-                              hasNote
-                                ? "bg-amber-500/10 border-amber-500/30 text-amber-500"
-                                : "bg-slate-100 dark:bg-neutral-900 border-slate-200 dark:border-neutral-800 text-slate-400 dark:text-neutral-500 hover:text-slate-700 dark:hover:text-white"
-                            }`}
-                            title={hasNote ? "View/edit notes" : "Add personal note"}
-                          >
-                            <FileText className="w-3.5 h-3.5" />
-                          </button>
-                        </td>
-                      </tr>
-                    );
-                  })
-                )}
-              </tbody>
-            </table>
-          </div>
-        </div>
+                              <button
+                                type="button"
+                                onClick={() => handleAddCustomVideo(problem.id)}
+                                className={`p-1.5 rounded-lg border text-xs transition cursor-pointer ${
+                                  hasCustomVideo
+                                    ? "bg-red-500/10 border-red-500/30 text-[#E04D4D]"
+                                    : "bg-slate-100 dark:bg-neutral-900 border-slate-200 dark:border-neutral-800 text-slate-500 dark:text-neutral-500 hover:text-slate-900 dark:hover:text-white"
+                                }`}
+                                title={hasCustomVideo ? "Edit custom video" : "Add custom video"}
+                              >
+                                <Plus className="w-3 h-3" />
+                              </button>
+                            </div>
+                          </td>
+
+                          {/* LeetCode Column */}
+                          <td className="py-3.5 px-4 text-center">
+                            <a
+                              href={problem.leetcodeUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-neutral-900 dark:hover:bg-neutral-800 border border-slate-200 dark:border-neutral-800 text-slate-700 dark:text-neutral-300 text-xs font-medium hover:text-[#E04D4D] transition"
+                            >
+                              <span>Solve</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </a>
+                          </td>
+
+                          {/* Notes Column */}
+                          <td className="py-3.5 px-4 text-center">
+                            <button
+                              type="button"
+                              onClick={() => setActiveNoteProblem(problem)}
+                              className={`p-1.5 rounded-lg border text-xs transition cursor-pointer inline-flex items-center justify-center ${
+                                hasNote
+                                  ? "bg-amber-500/10 border-amber-500/30 text-amber-500"
+                                  : "bg-slate-100 dark:bg-neutral-900 border-slate-200 dark:border-neutral-800 text-slate-400 dark:text-neutral-500 hover:text-slate-700 dark:hover:text-white"
+                              }`}
+                              title={hasNote ? "View/edit notes" : "Add personal note"}
+                            >
+                              <FileText className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Solution Modal */}

@@ -49,17 +49,17 @@ export default function CreatePlaylistModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-3 sm:p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="create-playlist-title"
     >
-      <div className="w-full max-w-lg rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-[#111] p-6 shadow-2xl text-slate-900 dark:text-white">
-        <h2 id="create-playlist-title" className="text-xl font-bold text-slate-900 dark:text-white">
+      <div className="w-full max-w-lg rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-[#111] p-4 sm:p-6 shadow-2xl text-slate-900 dark:text-white">
+        <h2 id="create-playlist-title" className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white">
           Import Playlist
         </h2>
 
-        <p className="mt-2 text-sm text-slate-500 dark:text-neutral-400">
+        <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-slate-500 dark:text-neutral-400">
           Paste a YouTube playlist URL.
         </p>
 

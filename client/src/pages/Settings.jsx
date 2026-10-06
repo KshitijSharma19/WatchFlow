@@ -210,9 +210,9 @@ export default function Settings() {
 
   return (
     <AppShell title="Settings">
-      <div className="max-w-6xl w-full mx-auto px-4 py-8 flex flex-col md:flex-row gap-8 min-w-0">
-        {/* Sidebar Navigation */}
-        <aside className="w-full md:w-56 shrink-0 flex flex-col gap-1.5">
+      <div className="max-w-6xl w-full mx-auto px-4 py-6 sm:py-8 flex flex-col md:flex-row gap-6 md:gap-8 min-w-0">
+        {/* Responsive Navigation: Horizontal scroll on mobile, Vertical sidebar on desktop */}
+        <aside className="w-full md:w-56 shrink-0 flex flex-row md:flex-col overflow-x-auto scrollbar-none gap-1.5 pb-2 md:pb-0">
           {TABS.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -221,7 +221,7 @@ export default function Settings() {
                 key={tab.id}
                 type="button"
                 onClick={() => setActiveTab(tab.id)}
-                className={`group relative flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 text-left border cursor-pointer ${isActive
+                className={`group relative flex items-center gap-2 sm:gap-3 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap md:whitespace-normal transition-all duration-200 text-left border cursor-pointer shrink-0 md:w-full ${isActive
                     ? tab.isDanger
                       ? "bg-red-50 border-red-200 text-red-600 dark:bg-red-950/40 dark:border-red-600/40 dark:text-red-400 font-semibold shadow-xs"
                       : "bg-red-50 border-red-200 text-red-600 dark:bg-[#BA3C3C]/15 dark:border-[#BA3C3C]/30 dark:text-red-400 font-semibold shadow-xs"
@@ -229,14 +229,14 @@ export default function Settings() {
                   }`}
               >
                 <Icon
-                  className={`w-4 h-4 transition-colors duration-200 ${isActive
+                  className={`w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0 transition-colors duration-200 ${isActive
                       ? tab.isDanger
                         ? "text-red-600 dark:text-red-500"
                         : "text-red-600 dark:text-red-400"
                       : "text-slate-400 group-hover:text-slate-600 dark:text-zinc-500 dark:group-hover:text-zinc-300"
                     }`}
                 />
-                {tab.label}
+                <span>{tab.label}</span>
               </button>
             );
           })}

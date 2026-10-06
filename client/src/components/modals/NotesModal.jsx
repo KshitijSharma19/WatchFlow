@@ -174,11 +174,11 @@ export default function NotesModal({
       role="dialog"
       aria-modal="true"
     >
-      <div className="w-full max-w-2xl rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-[#0b0b0d] p-5 sm:p-6 shadow-2xl flex flex-col max-h-[90vh] text-slate-900 dark:text-white">
+      <div className="w-full max-w-2xl rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-[#0b0b0d] p-4 sm:p-6 shadow-2xl flex flex-col max-h-[90vh] text-slate-900 dark:text-white">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-100 dark:border-neutral-800 pb-4 mb-4">
-          <div>
-            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-neutral-100 truncate max-w-[450px]">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-neutral-800 pb-3 sm:pb-4 mb-3 sm:mb-4">
+          <div className="min-w-0 flex-1 pr-2">
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-neutral-100 truncate max-w-[220px] sm:max-w-[450px]">
               {video.title}
             </h2>
             <p className="text-xs text-slate-500 dark:text-neutral-400 mt-0.5">Video Learning Notes</p>
@@ -187,7 +187,7 @@ export default function NotesModal({
           <button
             onClick={onClose}
             aria-label="Close notes modal"
-            className="p-1.5 rounded-lg border border-slate-200 dark:border-neutral-800 bg-slate-100 dark:bg-neutral-900 text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer"
+            className="p-1.5 rounded-lg border border-slate-200 dark:border-neutral-800 bg-slate-100 dark:bg-neutral-900 text-slate-500 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white transition cursor-pointer shrink-0"
           >
             <X className="w-4 h-4" />
           </button>

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { ListMusic, Settings, X, Play, FolderOpen, Code2, Compass, BookOpen } from "lucide-react";
+import { ListMusic, Settings, X, Play, FolderOpen, Code2, Compass, BookOpen, MessageSquare } from "lucide-react";
 import { NavLink, useLocation, Link } from "react-router-dom";
 import {
   getRecentPlaylist,
@@ -189,6 +189,34 @@ export default function Sidebar({ isOpen, setIsOpen }) {
               );
             })}
           </div>
+        </div>
+
+        <div className="pt-4 border-t border-slate-200 dark:border-neutral-800/70 space-y-1">
+          <NavLink
+            to="/settings"
+            onClick={closeSidebar}
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              location.pathname === "/settings"
+                ? "bg-red-500/10 dark:bg-red-950/30 border border-red-500/20 dark:border-red-500/30 text-slate-900 dark:text-white font-semibold"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-900/60"
+            }`}
+          >
+            <Settings className="w-4 h-4 text-slate-500 dark:text-neutral-400" />
+            Settings
+          </NavLink>
+
+          <NavLink
+            to="/feedback"
+            onClick={closeSidebar}
+            className={`flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
+              location.pathname === "/feedback"
+                ? "bg-red-500/10 dark:bg-red-950/30 border border-red-500/20 dark:border-red-500/30 text-slate-900 dark:text-white font-semibold"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100 dark:text-neutral-400 dark:hover:text-white dark:hover:bg-neutral-900/60"
+            }`}
+          >
+            <MessageSquare className="w-4 h-4 text-slate-500 dark:text-neutral-400" />
+            Feedback
+          </NavLink>
         </div>
       </aside>
     </>

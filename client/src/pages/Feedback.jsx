@@ -83,9 +83,9 @@ export default function Feedback() {
 
   return (
     <AppShell title="Feedback">
-      <div className="max-w-2xl mx-auto px-4 py-4 sm:py-6 flex flex-col justify-center min-h-[calc(100vh-140px)]">
+      <div className="max-w-2xl mx-auto px-4 py-6 sm:py-10">
         {/* Page Header */}
-        <div className="text-center mb-4 sm:mb-5">
+        <div className="text-center mb-5 sm:mb-6">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-1.5">
             Feedback
           </h1>
@@ -197,7 +197,7 @@ export default function Feedback() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="px-5 py-2 rounded-xl bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-semibold text-xs sm:text-sm transition shadow-md shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
+                className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-[#2563eb] hover:bg-[#1d4ed8] text-white font-semibold text-xs sm:text-sm transition shadow-md shadow-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer"
               >
                 {isSubmitting ? (
                   <>

@@ -63,13 +63,13 @@ export default function ConfirmModal({
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-3 sm:p-4 backdrop-blur-sm"
       role="dialog"
       aria-modal="true"
       aria-labelledby="confirm-modal-title"
     >
       <div className="w-full max-w-md rounded-2xl border border-slate-200 dark:border-neutral-800 bg-white dark:bg-[#111] shadow-2xl text-slate-900 dark:text-white">
-        <div className="flex items-start gap-4 p-6">
+        <div className="flex items-start gap-3 sm:gap-4 p-4 sm:p-6">
           <div
             className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ${iconBg}`}
           >

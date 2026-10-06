@@ -114,8 +114,8 @@ export default function PlaylistDetails() {
 
   return (
     <AppShell showBack title={playlist.title || "Playlist"}>
-      <main className="w-full max-w-6xl mx-auto px-5 pb-6 font-sans">
-        <section className="bg-white dark:bg-neutral-900/40 border border-slate-200 dark:border-neutral-800 rounded-2xl p-6 mb-6 shadow-xs dark:shadow-none">
+      <main className="w-full max-w-6xl mx-auto px-3 sm:px-5 pb-6 font-sans">
+        <section className="bg-white dark:bg-neutral-900/40 border border-slate-200 dark:border-neutral-800 rounded-2xl p-4 sm:p-6 mb-6 shadow-xs dark:shadow-none">
           <div className="flex flex-col md:flex-row gap-6">
             <div className="w-full md:w-80 aspect-video rounded-xl overflow-hidden shrink-0 bg-slate-100 dark:bg-neutral-950 border border-slate-200 dark:border-transparent">
               <img

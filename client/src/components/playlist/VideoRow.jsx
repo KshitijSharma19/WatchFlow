@@ -34,17 +34,17 @@ const VideoRow = memo(({
           <img
             src={video.thumbnailUrl}
             alt={video.title}
-            className="w-24 rounded-lg object-cover shrink-0 aspect-video bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-transparent"
+            className="w-18 sm:w-24 rounded-lg object-cover shrink-0 aspect-video bg-slate-100 dark:bg-neutral-900 border border-slate-200 dark:border-transparent"
             loading="lazy"
           />
 
           <div className="flex-1 min-w-0">
-            <h3 className="text-sm font-medium line-clamp-2 text-slate-900 dark:text-white transition-colors duration-200 group-hover:text-red-600 dark:group-hover:text-red-300">
+            <h3 className="text-xs sm:text-sm font-medium line-clamp-2 text-slate-900 dark:text-white transition-colors duration-200 group-hover:text-red-600 dark:group-hover:text-red-300">
               {video.title}
             </h3>
 
-            <div className="mt-2">
-              <div className="flex justify-between text-xs text-slate-500 dark:text-neutral-500 mb-1">
+            <div className="mt-1.5 sm:mt-2">
+              <div className="flex justify-between text-[11px] sm:text-xs text-slate-500 dark:text-neutral-500 mb-1">
                 <span>{formatDuration(video.durationInSeconds)}</span>
                 <span>{video.progressPercent}%</span>
               </div>
@@ -62,14 +62,14 @@ const VideoRow = memo(({
         <button
           type="button"
           onClick={() => onNotesClick(video)}
-          className={`shrink-0 flex items-center gap-2 px-3 py-2 rounded-xl border transition-all cursor-pointer ${
+          className={`shrink-0 flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border transition-all cursor-pointer ${
             video.notes?.trim()
               ? "bg-red-50 border-red-200 text-red-600 dark:bg-red-500/10 dark:border-red-500/20 dark:text-red-300"
               : "bg-slate-100 border-slate-200 text-slate-600 hover:bg-slate-200 dark:bg-neutral-900 dark:border-neutral-800 dark:text-neutral-300 hover:border-red-500/30"
           }`}
         >
           <FileText className="w-3.5 h-3.5 text-red-500 dark:text-red-400" />
-          <span className="text-xs font-medium">
+          <span className="text-xs font-medium hidden sm:inline">
             {video.notes?.trim() ? "Saved" : "Notes"}
           </span>
         </button>

@@ -155,10 +155,10 @@ export default function AuthPage() {
       <BackgroundGlow />
 
       {/* Top Left Branding: Watch in white, Flow in red with transparent custom logo */}
-      <header className="absolute top-0 left-0 w-full p-6 md:p-8 flex items-center justify-between z-20 pointer-events-none">
+      <header className="absolute top-0 left-0 w-full p-4 sm:p-6 md:p-8 flex items-center justify-between z-20 pointer-events-none">
         <Link
           to="/"
-          className="pointer-events-auto flex items-center gap-3 group transition-transform active:scale-95"
+          className="pointer-events-auto flex items-center gap-2.5 sm:gap-3 group transition-transform active:scale-95"
           aria-label="WatchFlow Home"
         >
           <img
@@ -174,8 +174,8 @@ export default function AuthPage() {
       </header>
 
       {/* Central Login / Register Card */}
-      <div className="relative z-10 w-full max-w-md mt-6 sm:mt-0">
-        <div className="w-full bg-white/95 dark:bg-[#0c0c11]/85 border border-slate-200 dark:border-neutral-800/80 rounded-2xl p-7 sm:p-8 backdrop-blur-xl shadow-xl dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.6)]">
+      <div className="relative z-10 w-full max-w-md mt-14 sm:mt-0">
+        <div className="w-full bg-white/95 dark:bg-[#0c0c11]/85 border border-slate-200 dark:border-neutral-800/80 rounded-2xl p-5 sm:p-8 backdrop-blur-xl shadow-xl dark:shadow-[0_8px_32px_0_rgba(0,0,0,0.6)]">
           <button
             type="button"
             onClick={() => navigate("/")}

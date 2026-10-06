@@ -95,14 +95,14 @@ export default function HeroProductPreview() {
           </div>
 
           {/* Centered URL Address Pill */}
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 text-[11px] text-slate-600 dark:text-neutral-400 font-mono select-none shadow-2xs">
-            <Lock className="w-3 h-3 text-emerald-500 dark:text-emerald-400" />
-            <span>watchflow.app/workspace</span>
+          <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-md bg-white dark:bg-black/40 border border-slate-200 dark:border-white/5 text-[10px] sm:text-[11px] text-slate-600 dark:text-neutral-400 font-mono select-none shadow-2xs max-w-[150px] sm:max-w-none truncate">
+            <Lock className="w-3 h-3 text-emerald-500 dark:text-emerald-400 shrink-0" />
+            <span className="truncate">watchflow.app/workspace</span>
           </div>
 
           {/* Right Status Indicator */}
-          <div className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400 select-none">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse" />
+          <div className="flex items-center gap-1.5 text-[10px] sm:text-[11px] font-medium text-emerald-600 dark:text-emerald-400 select-none">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400 animate-pulse shrink-0" />
             <span className="hidden sm:inline">Zero Distractions</span>
           </div>
         </div>
@@ -376,13 +376,13 @@ export default function HeroProductPreview() {
               </div>
 
               {/* Bottom Sheet CTA */}
-              <div className="pt-1 flex items-center justify-between gap-3">
+              <div className="pt-1 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-3">
                 <span className="text-[11px] text-slate-500 dark:text-neutral-400">
                   Every problem includes C++, Java, Python code & YouTube walkthroughs.
                 </span>
                 <Link
                   to="/sheets"
-                  className="px-4 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 hover:border-red-500/50 font-bold text-xs flex items-center gap-1.5 shrink-0 transition active:scale-[0.98]"
+                  className="w-full sm:w-auto justify-center px-4 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 hover:border-red-500/50 font-bold text-xs flex items-center gap-1.5 shrink-0 transition active:scale-[0.98]"
                 >
                   <span>Open 500+ Sheets</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -452,13 +452,13 @@ export default function HeroProductPreview() {
               </div>
 
               {/* Bottom Roadmap CTA */}
-              <div className="pt-1 flex items-center justify-between gap-3">
+              <div className="pt-1 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-3">
                 <span className="text-[11px] text-slate-500 dark:text-neutral-400">
                   Custom AI curriculums generated in seconds based on your target role.
                 </span>
                 <Link
                   to="/roadmap"
-                  className="px-4 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 hover:border-red-500/50 font-bold text-xs flex items-center gap-1.5 shrink-0 transition active:scale-[0.98]"
+                  className="w-full sm:w-auto justify-center px-4 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 hover:border-red-500/50 font-bold text-xs flex items-center gap-1.5 shrink-0 transition active:scale-[0.98]"
                 >
                   <span>Build AI Roadmap</span>
                   <ArrowRight className="w-3.5 h-3.5" />
@@ -557,13 +557,13 @@ export default function HeroProductPreview() {
               </div>
 
               {/* Bottom CTA */}
-              <div className="pt-0.5 flex items-center justify-between gap-3">
+              <div className="pt-0.5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2.5 sm:gap-3">
                 <span className="text-[11px] text-slate-500 dark:text-neutral-400">
                   Build habits that stick with distraction-free note taking.
                 </span>
                 <Link
                   to="/notes"
-                  className="px-4 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 hover:border-red-500/50 font-bold text-xs flex items-center gap-1.5 shrink-0 transition active:scale-[0.98]"
+                  className="w-full sm:w-auto justify-center px-4 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 hover:border-red-500/50 font-bold text-xs flex items-center gap-1.5 shrink-0 transition active:scale-[0.98]"
                 >
                   <span>Open Notes Hub</span>
                   <ArrowRight className="w-3.5 h-3.5" />
