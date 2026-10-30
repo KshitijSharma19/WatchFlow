@@ -2,7 +2,7 @@ const Playlist = require("../models/Playlist");
 
 const verifyPlaylistOwnership = async (req, res, next) => {
   try {
-    const playlist = await Playlist.findById(req.params.id);
+    const playlist = await Playlist.findById(req.params.id).lean();
 
     if (!playlist) {
       return res.status(404).json({
@@ -18,6 +18,7 @@ const verifyPlaylistOwnership = async (req, res, next) => {
       });
     }
 
+    req.playlist = playlist;
     next();
   } catch (error) {
     console.error(error.message);

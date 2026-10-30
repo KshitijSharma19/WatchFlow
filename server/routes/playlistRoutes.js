@@ -19,7 +19,7 @@ router.post("/sync", protect, syncPlaylist);
 
 router.get("/", protect, getUserPlaylists);
 
-router.get("/:id", protect, verifyPlaylistOwnership, getPlaylistDetails);
+router.get("/:id", protect, getPlaylistDetails);
 
 router.delete("/:id", protect, verifyPlaylistOwnership, deletePlaylist);
 

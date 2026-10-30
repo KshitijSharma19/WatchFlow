@@ -253,35 +253,59 @@ exports.getUserPlaylists = async (req, res) => {
     const userId = req.user.id;
     const playlistsRaw = await Playlist.find({ userId }).sort({
       createdAt: -1,
-    });
+    }).lean();
 
-    const playlists = await Promise.all(
-      playlistsRaw.map(async (playlist) => {
-        const videos = await Video.find({ playlistId: playlist._id }).sort({ position: 1 });
-        const stats = calculatePlaylistStats(videos);
+    if (!playlistsRaw.length) {
+      return res.status(200).json({
+        success: true,
+        playlists: [],
+      });
+    }
 
-        let thumbnailUrl = playlist.thumbnailUrl;
-        if (!thumbnailUrl || thumbnailUrl.includes("undefined") || thumbnailUrl.trim() === "") {
-          const firstVideo = videos[0];
-          if (firstVideo?.thumbnailUrl) {
-            thumbnailUrl = firstVideo.thumbnailUrl;
-          } else if (firstVideo?.ytVideoId) {
-            thumbnailUrl = `https://i.ytimg.com/vi/${firstVideo.ytVideoId}/hqdefault.jpg`;
-          }
-          if (thumbnailUrl && thumbnailUrl !== playlist.thumbnailUrl) {
-            playlist.thumbnailUrl = thumbnailUrl;
-            await playlist.save().catch(() => {});
-          }
+    const playlistIds = playlistsRaw.map((p) => p._id);
+
+    // Fetch all videos for all playlists in a single bulk query
+    const allVideos = await Video.find(
+      { playlistId: { $in: playlistIds } },
+      "playlistId ytVideoId title completed durationInSeconds watchedSeconds position thumbnailUrl"
+    )
+      .sort({ position: 1 })
+      .lean();
+
+    // Group videos by playlistId in memory
+    const videosByPlaylist = new Map();
+    for (const v of allVideos) {
+      const pIdStr = v.playlistId.toString();
+      let arr = videosByPlaylist.get(pIdStr);
+      if (!arr) {
+        arr = [];
+        videosByPlaylist.set(pIdStr, arr);
+      }
+      arr.push(v);
+    }
+
+    const playlists = playlistsRaw.map((playlist) => {
+      const pIdStr = playlist._id.toString();
+      const videos = videosByPlaylist.get(pIdStr) || [];
+      const stats = calculatePlaylistStats(videos);
+
+      let thumbnailUrl = playlist.thumbnailUrl;
+      if (!thumbnailUrl || thumbnailUrl.includes("undefined") || thumbnailUrl.trim() === "") {
+        const firstVideo = videos[0];
+        if (firstVideo?.thumbnailUrl) {
+          thumbnailUrl = firstVideo.thumbnailUrl;
+        } else if (firstVideo?.ytVideoId) {
+          thumbnailUrl = `https://i.ytimg.com/vi/${firstVideo.ytVideoId}/hqdefault.jpg`;
         }
+      }
 
-        return {
-          ...playlist.toObject(),
-          thumbnailUrl,
-          ...stats,
-          videos,
-        };
-      }),
-    );
+      return {
+        ...playlist,
+        thumbnailUrl,
+        ...stats,
+        videos,
+      };
+    });
 
     res.status(200).json({
       success: true,

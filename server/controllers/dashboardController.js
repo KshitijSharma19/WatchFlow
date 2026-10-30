@@ -5,84 +5,94 @@ exports.getDashboard = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const totalPlaylists = await Playlist.countDocuments({ userId });
-
-    const userPlaylists = await Playlist.find({ userId });
-
-    const recentPlaylistsRaw = await Playlist.find({ userId })
+    const userPlaylists = await Playlist.find({ userId })
       .sort({ createdAt: -1 })
-      .limit(4);
+      .lean();
 
-    const recentPlaylists = await Promise.all(
-      recentPlaylistsRaw.map(async (playlist) => {
-        const videos = await Video.find({
-          playlistId: playlist._id,
-        }).sort({ position: 1 });
+    const totalPlaylists = userPlaylists.length;
+    if (totalPlaylists === 0) {
+      return res.status(200).json({
+        success: true,
+        stats: {
+          totalPlaylists: 0,
+          totalVideos: 0,
+          completedVideos: 0,
+          videoProgress: 0,
+        },
+        recentPlaylists: [],
+      });
+    }
 
-        const completedVideos = videos.filter(
-          (video) => video.completed,
-        ).length;
+    const playlistIds = userPlaylists.map((p) => p._id);
+    const recentPlaylistsRaw = userPlaylists.slice(0, 4);
 
-        const progress =
-          videos.length === 0
-            ? 0
-            : Math.round((completedVideos / videos.length) * 100);
+    // Fetch all videos for user playlists in 1 bulk query with minimal projection
+    const allVideos = await Video.find(
+      { playlistId: { $in: playlistIds } },
+      "playlistId completed durationInSeconds watchedSeconds position thumbnailUrl ytVideoId"
+    )
+      .sort({ position: 1 })
+      .lean();
 
-        const totalSeconds = videos.reduce(
-          (sum, video) => sum + (video.durationInSeconds || 0),
-          0,
-        );
+    // Group videos by playlistId in memory
+    const videosByPlaylist = new Map();
+    let totalVideos = 0;
+    let completedVideos = 0;
 
-        const watchedSeconds = videos.reduce(
-          (sum, video) => sum + (video.watchedSeconds || 0),
-          0,
-        );
+    for (const v of allVideos) {
+      totalVideos++;
+      if (v.completed) completedVideos++;
 
-        const remainingHours = ((totalSeconds - watchedSeconds) / 3600).toFixed(
-          1,
-        );
-
-        let thumbnailUrl = playlist.thumbnailUrl;
-        if (!thumbnailUrl || thumbnailUrl.includes("undefined") || thumbnailUrl.trim() === "") {
-          const firstVideo = videos[0];
-          if (firstVideo?.thumbnailUrl) {
-            thumbnailUrl = firstVideo.thumbnailUrl;
-          } else if (firstVideo?.ytVideoId) {
-            thumbnailUrl = `https://i.ytimg.com/vi/${firstVideo.ytVideoId}/hqdefault.jpg`;
-          }
-          if (thumbnailUrl && thumbnailUrl !== playlist.thumbnailUrl) {
-            playlist.thumbnailUrl = thumbnailUrl;
-            await playlist.save().catch(() => {});
-          }
-        }
-
-        return {
-          ...playlist.toObject(),
-          thumbnailUrl,
-          completedVideos,
-          progress,
-          remainingHours,
-        };
-      }),
-    );
-
-    const playlistIds = userPlaylists.map((playlist) => playlist._id);
-
-    const totalVideos = await Video.countDocuments({
-      playlistId: {
-        $in: playlistIds,
-      },
-    });
-
-    const completedVideos = await Video.countDocuments({
-      playlistId: {
-        $in: playlistIds,
-      },
-      completed: true,
-    });
+      const pIdStr = v.playlistId.toString();
+      let arr = videosByPlaylist.get(pIdStr);
+      if (!arr) {
+        arr = [];
+        videosByPlaylist.set(pIdStr, arr);
+      }
+      arr.push(v);
+    }
 
     const videoProgress =
       totalVideos === 0 ? 0 : Math.round((completedVideos / totalVideos) * 100);
+
+    const recentPlaylists = recentPlaylistsRaw.map((playlist) => {
+      const pIdStr = playlist._id.toString();
+      const videos = videosByPlaylist.get(pIdStr) || [];
+
+      const pCompleted = videos.filter((video) => video.completed).length;
+      const progress =
+        videos.length === 0 ? 0 : Math.round((pCompleted / videos.length) * 100);
+
+      const totalSeconds = videos.reduce(
+        (sum, video) => sum + (video.durationInSeconds || 0),
+        0
+      );
+
+      const watchedSeconds = videos.reduce(
+        (sum, video) => sum + (video.watchedSeconds || 0),
+        0
+      );
+
+      const remainingHours = ((totalSeconds - watchedSeconds) / 3600).toFixed(1);
+
+      let thumbnailUrl = playlist.thumbnailUrl;
+      if (!thumbnailUrl || thumbnailUrl.includes("undefined") || thumbnailUrl.trim() === "") {
+        const firstVideo = videos[0];
+        if (firstVideo?.thumbnailUrl) {
+          thumbnailUrl = firstVideo.thumbnailUrl;
+        } else if (firstVideo?.ytVideoId) {
+          thumbnailUrl = `https://i.ytimg.com/vi/${firstVideo.ytVideoId}/hqdefault.jpg`;
+        }
+      }
+
+      return {
+        ...playlist,
+        thumbnailUrl,
+        completedVideos: pCompleted,
+        progress,
+        remainingHours,
+      };
+    });
 
     res.status(200).json({
       success: true,
@@ -108,9 +118,9 @@ exports.getContinueLearning = async (req, res) => {
   try {
     const userId = req.user.id;
 
-    const playlist = await Playlist.findOne({ userId }).sort({
-      lastAccessedAt: -1,
-    });
+    const playlist = await Playlist.findOne({ userId })
+      .sort({ lastAccessedAt: -1 })
+      .lean();
 
     if (!playlist) {
       return res.status(200).json({
@@ -119,23 +129,22 @@ exports.getContinueLearning = async (req, res) => {
       });
     }
 
-    // Resume partially watched video first
+    // Resume partially watched video first, otherwise first uncompleted video
     let video = await Video.findOne({
       playlistId: playlist._id,
       completed: false,
       progressPercent: { $gt: 0 },
-    }).sort({
-      position: 1,
-    });
+    })
+      .sort({ position: 1 })
+      .lean();
 
-    // Otherwise first uncompleted video
     if (!video) {
       video = await Video.findOne({
         playlistId: playlist._id,
         completed: false,
-      }).sort({
-        position: 1,
-      });
+      })
+        .sort({ position: 1 })
+        .lean();
     }
 
     // Everything completed

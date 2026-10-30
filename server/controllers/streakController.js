@@ -28,7 +28,7 @@ exports.getStreakData = async (req, res) => {
       userId: req.user.id,
     }).sort({
       date: 1,
-    });
+    }).lean();
 
     const dateMap = Object.create(null);
 

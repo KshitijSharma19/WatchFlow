@@ -36,5 +36,7 @@ const PlaylistSchema = new mongoose.Schema({
 });
 
 PlaylistSchema.index({ userId: 1, ytPlaylistId: 1 }, { unique: true });
+PlaylistSchema.index({ userId: 1, createdAt: -1 });
+PlaylistSchema.index({ userId: 1, lastAccessedAt: -1 });
 
 module.exports = mongoose.model("Playlist", PlaylistSchema);

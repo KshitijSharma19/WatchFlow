@@ -59,7 +59,7 @@ const VideoSchema = new mongoose.Schema({
 });
 
 VideoSchema.index({ playlistId: 1, position: 1 });
-
+VideoSchema.index({ playlistId: 1, completed: 1 });
 VideoSchema.index({ playlistId: 1, ytVideoId: 1 });
 
 module.exports = mongoose.model("Video", VideoSchema);
