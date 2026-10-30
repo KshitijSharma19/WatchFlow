@@ -1,5 +1,6 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useRef } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 import {
   Search,
   Check,
@@ -19,6 +20,7 @@ import { SHEETS_DATA } from "../data/sheetsData";
 import SolutionModal from "../components/sheets/SolutionModal";
 import VideoModal from "../components/sheets/VideoModal";
 import NoteModal from "../components/sheets/NoteModal";
+import { extractYouTubeId } from "../utils/youtube";
 
 export default function SheetDetailPage() {
   const { sheetId } = useParams();
@@ -67,7 +69,22 @@ export default function SheetDetailPage() {
       if (savedNotes) setNotesMap(JSON.parse(savedNotes));
 
       const savedVideos = localStorage.getItem("watchflow_sheets_custom_videos");
-      if (savedVideos) setCustomVideoMap(JSON.parse(savedVideos));
+      if (savedVideos) {
+        const parsed = JSON.parse(savedVideos);
+        // Normalize any saved URLs into clean 11-character video IDs
+        const normalized = {};
+        for (const [key, value] of Object.entries(parsed)) {
+          const cleanId = extractYouTubeId(value);
+          if (cleanId) {
+            normalized[key] = cleanId;
+          }
+        }
+        setCustomVideoMap(normalized);
+        localStorage.setItem(
+          "watchflow_sheets_custom_videos",
+          JSON.stringify(normalized),
+        );
+      }
     } catch (e) {
       console.error("Storage load error:", e);
     }
@@ -101,20 +118,47 @@ export default function SheetDetailPage() {
 
   const handleAddCustomVideo = (problemId) => {
     const existing = customVideoMap[problemId] || "";
-    const url = prompt(
-      "Paste custom YouTube URL or Video ID for this problem:",
-      existing,
+    const promptDefault = existing
+      ? `https://www.youtube.com/watch?v=${existing}`
+      : "";
+
+    const input = prompt(
+      "Paste YouTube video URL or Video ID for this problem (leave empty to remove):",
+      promptDefault,
     );
-    if (url !== null) {
+
+    if (input === null) return; // user cancelled
+
+    const trimmed = input.trim();
+    if (!trimmed) {
       setCustomVideoMap((prev) => {
-        const updated = { ...prev, [problemId]: url.trim() };
+        const updated = { ...prev };
+        delete updated[problemId];
         localStorage.setItem(
           "watchflow_sheets_custom_videos",
           JSON.stringify(updated),
         );
         return updated;
       });
+      toast.success("Custom video removed.");
+      return;
     }
+
+    const videoId = extractYouTubeId(trimmed);
+    if (!videoId) {
+      toast.error("Please enter a valid YouTube video URL or 11-character video ID.");
+      return;
+    }
+
+    setCustomVideoMap((prev) => {
+      const updated = { ...prev, [problemId]: videoId };
+      localStorage.setItem(
+        "watchflow_sheets_custom_videos",
+        JSON.stringify(updated),
+      );
+      return updated;
+    });
+    toast.success("Video added successfully!");
   };
 
   // Filter problems
@@ -165,6 +209,59 @@ export default function SheetDetailPage() {
   const topicsList = useMemo(() => {
     return sheet.topics || ["All Topics"];
   }, [sheet]);
+
+  // Topic bar mouse scroll & drag handling
+  const topicsContainerRef = useRef(null);
+  const isDraggingTopicsRef = useRef(false);
+  const topicsStartXRef = useRef(0);
+  const topicsScrollLeftRef = useRef(0);
+  const hasDraggedTopicsRef = useRef(false);
+
+  // Wheel listener: converts vertical mouse wheel scroll to horizontal scroll
+  useEffect(() => {
+    const el = topicsContainerRef.current;
+    if (!el) return;
+
+    const onWheel = (e) => {
+      if (el.scrollWidth > el.clientWidth) {
+        if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+          e.preventDefault();
+          el.scrollLeft += e.deltaY;
+        }
+      }
+    };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [topicsList]);
+
+  const handleTopicsMouseDown = (e) => {
+    const el = topicsContainerRef.current;
+    if (!el) return;
+    isDraggingTopicsRef.current = true;
+    hasDraggedTopicsRef.current = false;
+    topicsStartXRef.current = e.pageX - el.offsetLeft;
+    topicsScrollLeftRef.current = el.scrollLeft;
+  };
+
+  const handleTopicsMouseMove = (e) => {
+    if (!isDraggingTopicsRef.current) return;
+    const el = topicsContainerRef.current;
+    if (!el) return;
+    const x = e.pageX - el.offsetLeft;
+    const walk = x - topicsStartXRef.current;
+    if (Math.abs(walk) > 4) {
+      hasDraggedTopicsRef.current = true;
+      el.scrollLeft = topicsScrollLeftRef.current - walk;
+    }
+  };
+
+  const handleTopicsMouseUp = () => {
+    isDraggingTopicsRef.current = false;
+    setTimeout(() => {
+      hasDraggedTopicsRef.current = false;
+    }, 50);
+  };
 
   return (
     <AppShell title={sheet.title}>
@@ -235,15 +332,26 @@ export default function SheetDetailPage() {
 
         {/* Topic Filter Pills (if multiple topics available) */}
         {topicsList.length > 1 && (
-          <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-5 scrollbar-none">
+          <div
+            ref={topicsContainerRef}
+            onMouseDown={handleTopicsMouseDown}
+            onMouseMove={handleTopicsMouseMove}
+            onMouseUp={handleTopicsMouseUp}
+            onMouseLeave={handleTopicsMouseUp}
+            className="flex items-center gap-2 overflow-x-auto pb-3 mb-5 scrollbar-none select-none cursor-grab active:cursor-grabbing"
+          >
             {topicsList.map((topic) => (
               <button
                 key={topic}
-                onClick={() => setSelectedTopic(topic)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition cursor-pointer ${
+                type="button"
+                onClick={() => {
+                  if (hasDraggedTopicsRef.current) return;
+                  setSelectedTopic(topic);
+                }}
+                className={`px-3.5 py-1.5 rounded-xl text-xs whitespace-nowrap transition cursor-pointer ${
                   selectedTopic === topic
-                    ? "bg-[#E04D4D] text-white shadow-sm"
-                    : "bg-white/80 dark:bg-neutral-900/60 border border-slate-200 dark:border-neutral-800 text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-neutral-800"
+                    ? "bg-red-500/10 hover:bg-red-500/20 text-[#E04D4D] dark:text-red-400 border border-red-500/30 font-semibold shadow-xs"
+                    : "bg-white/80 dark:bg-neutral-900/60 border border-slate-200 dark:border-neutral-800 text-slate-600 dark:text-neutral-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-neutral-800 font-medium"
                 }`}
               >
                 {topic}
@@ -303,8 +411,9 @@ export default function SheetDetailPage() {
                 const isSolved = !!solvedMap[problem.id];
                 const isStarred = !!starredMap[problem.id];
                 const hasNote = !!notesMap[problem.id];
-                const hasCustomVideo = !!customVideoMap[problem.id];
-                const hasPlayableVideo = hasCustomVideo || (problem.hasVideo && !!problem.youtubeId);
+                const customVid = customVideoMap[problem.id];
+                const hasCustomVideo = !!(customVid && extractYouTubeId(customVid));
+                const hasPlayableVideo = hasCustomVideo || (problem.hasVideo && !!extractYouTubeId(problem.youtubeId));
 
                 return (
                   <div
@@ -473,8 +582,9 @@ export default function SheetDetailPage() {
                       const isSolved = !!solvedMap[problem.id];
                       const isStarred = !!starredMap[problem.id];
                       const hasNote = !!notesMap[problem.id];
-                      const hasCustomVideo = !!customVideoMap[problem.id];
-                      const hasPlayableVideo = hasCustomVideo || (problem.hasVideo && !!problem.youtubeId);
+                      const customVid = customVideoMap[problem.id];
+                      const hasCustomVideo = !!(customVid && extractYouTubeId(customVid));
+                      const hasPlayableVideo = hasCustomVideo || (problem.hasVideo && !!extractYouTubeId(problem.youtubeId));
 
                       return (
                         <tr
@@ -643,7 +753,12 @@ export default function SheetDetailPage() {
         problem={activeSolutionProblem}
         isOpen={!!activeSolutionProblem}
         onClose={() => setActiveSolutionProblem(null)}
-        onOpenVideo={(prob) => setActiveVideoProblem(prob)}
+        onOpenVideo={(prob) => {
+          const customVid = customVideoMap[prob?.id];
+          setActiveVideoProblem(
+            customVid ? { ...prob, youtubeId: customVid } : prob
+          );
+        }}
       />
 
       {/* Video Modal */}

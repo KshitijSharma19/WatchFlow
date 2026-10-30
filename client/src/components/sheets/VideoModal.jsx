@@ -1,16 +1,19 @@
-import { useEffect, useRef } from "react";
-import { X, ExternalLink } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { X, ExternalLink, AlertCircle } from "lucide-react";
 import api from "../../api/axios";
+import { extractYouTubeId } from "../../utils/youtube";
 
 export default function VideoModal({ problem, isOpen, onClose }) {
   const watchSecondsRef = useRef(0);
   const loggedStreakRef = useRef(false);
 
+  const videoId = problem?.youtubeId ? extractYouTubeId(problem.youtubeId) : null;
+
   useEffect(() => {
     watchSecondsRef.current = 0;
     loggedStreakRef.current = false;
 
-    if (!isOpen || !problem?.youtubeId) return;
+    if (!isOpen || !videoId) return;
 
     const timer = setInterval(() => {
       watchSecondsRef.current += 1;
@@ -21,12 +24,12 @@ export default function VideoModal({ problem, isOpen, onClose }) {
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [isOpen, problem?.youtubeId]);
+  }, [isOpen, videoId]);
 
   if (!isOpen || !problem) return null;
 
-  const embedUrl = problem.youtubeId
-    ? `https://www.youtube.com/embed/${problem.youtubeId}?autoplay=1&rel=0`
+  const embedUrl = videoId
+    ? `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`
     : null;
 
   return (
@@ -45,9 +48,9 @@ export default function VideoModal({ problem, isOpen, onClose }) {
           </div>
 
           <div className="flex items-center gap-2">
-            {problem.youtubeId && (
+            {videoId && (
               <a
-                href={`https://www.youtube.com/watch?v=${problem.youtubeId}`}
+                href={`https://www.youtube.com/watch?v=${videoId}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="p-1.5 rounded-lg bg-neutral-900 border border-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-800 transition cursor-pointer text-xs flex items-center gap-1.5"
@@ -72,10 +75,12 @@ export default function VideoModal({ problem, isOpen, onClose }) {
         <div className="w-full aspect-video bg-black flex items-center justify-center">
           {embedUrl ? (
             <iframe
+              key={videoId}
               src={embedUrl}
               title={`Video solution for ${problem.title}`}
               className="w-full h-full border-0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              referrerPolicy="strict-origin-when-cross-origin"
               allowFullScreen
             />
           ) : (

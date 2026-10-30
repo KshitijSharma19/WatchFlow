@@ -332,7 +332,7 @@ export default function SolutionModal({ problem, isOpen, onClose, onOpenVideo })
             <ExternalLink className="w-3.5 h-3.5" />
           </a>
 
-          {problem.hasVideo && onOpenVideo && (
+          {(problem.hasVideo || !!problem.youtubeId) && onOpenVideo && (
             <button
               onClick={() => {
                 onClose();

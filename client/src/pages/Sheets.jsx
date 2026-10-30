@@ -54,12 +54,12 @@ export default function SheetsPage() {
 
             <h1 className="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.15]">
               One topic at a time, <br className="hidden sm:inline" />
-              solved three ways.
+              solved four ways.
             </h1>
 
             <p className="text-slate-600 dark:text-neutral-400 text-sm sm:text-base lg:text-lg max-w-xl leading-relaxed">
-              Work through a topic end to end. Every problem links straight to LeetCode,
-              opens its clean solution in C++, Java, Python and plays the video walkthrough.
+              Work through a topic end to end. Every problem links straight to LeetCode, reveals clean
+              solutions in C++, Java, Python, JavaScript & features a video walkthrough.
             </p>
 
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
@@ -102,7 +102,7 @@ export default function SheetsPage() {
               Everything for one problem, on one line.
             </h2>
             <p className="text-slate-600 dark:text-neutral-400 text-sm sm:text-base leading-relaxed">
-              No hunting across tabs for the question, a clean solution and an explanation. Each row carries all three.
+              No hunting across tabs for the question, solution or explanation. Each row carries everything you need.
             </p>
           </div>
 
@@ -127,10 +127,10 @@ export default function SheetsPage() {
                 <Code2 className="w-5 h-5" />
               </div>
               <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                Read it three ways
+                Read it four ways
               </h3>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-neutral-400 leading-relaxed">
-                The solution in C++, Java and Python with the approach and its complexity in one line.
+                Solutions in C++, Java, Python and JavaScript with a one-line approach and complexity.
               </p>
             </div>
 
@@ -143,7 +143,7 @@ export default function SheetsPage() {
                 Video Walkthroughs
               </h3>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-neutral-400 leading-relaxed">
-                Curated video tutorials and step-by-step explanations right inside the sheet without leaving your workspace.
+                Find video tutorials right inside the sheet without leaving your workspace.
               </p>
             </div>
 
@@ -156,7 +156,7 @@ export default function SheetsPage() {
                 Tick it off
               </h3>
               <p className="text-xs sm:text-sm text-slate-500 dark:text-neutral-400 leading-relaxed">
-                Mark a problem done and the sheet keeps count, so you always know what is next.
+                Mark a problem as done and the sheet keeps count, so you always know what is next.
               </p>
             </div>
           </div>

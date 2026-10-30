@@ -36,6 +36,10 @@ export default function AnimatedSheetPreview() {
         else:
             nums1[p] = nums2[p2]; p2 -= 1
         p -= 1`,
+        javascript: `var merge = function(nums1, m, nums2, n) {
+    let p1 = m - 1, p2 = n - 1, p = m + n - 1;
+    while (p2 >= 0) nums1[p--] = (p1 >= 0 && nums1[p1] > nums2[p2]) ? nums1[p1--] : nums2[p2--];
+};`,
       },
     },
     {
@@ -50,7 +54,7 @@ export default function AnimatedSheetPreview() {
 
   // Auto-cycle language tabs subtly every 3 seconds for continuous micro-animation
   useEffect(() => {
-    const langs = ["python", "cpp", "java"];
+    const langs = ["python", "cpp", "java", "javascript"];
     const timer = setInterval(() => {
       setActiveLang((prev) => {
         const nextIdx = (langs.indexOf(prev) + 1) % langs.length;
@@ -146,8 +150,8 @@ export default function AnimatedSheetPreview() {
                 {isExpanded && (
                   <div className="mt-2.5 pt-2 border-t border-slate-200 dark:border-neutral-800/80 animate-in fade-in duration-200">
                     {/* Language Selector Tabs */}
-                    <div className="flex items-center gap-3 text-[10px] font-semibold mb-2">
-                      {["python", "cpp", "java"].map((lang) => (
+                    <div className="flex items-center gap-2.5 sm:gap-3 text-[10px] font-semibold mb-2">
+                      {["python", "cpp", "java", "javascript"].map((lang) => (
                         <button
                           key={lang}
                           type="button"
@@ -161,7 +165,13 @@ export default function AnimatedSheetPreview() {
                               : "text-slate-400 hover:text-slate-700 dark:text-neutral-500 dark:hover:text-neutral-300"
                           }`}
                         >
-                          {lang === "cpp" ? "C++" : lang === "java" ? "Java" : "Python"}
+                          {lang === "cpp"
+                            ? "C++"
+                            : lang === "java"
+                              ? "Java"
+                              : lang === "python"
+                                ? "Python"
+                                : "JavaScript"}
                           {activeLang === lang && (
                             <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#E04D4D] rounded-full animate-in fade-in" />
                           )}

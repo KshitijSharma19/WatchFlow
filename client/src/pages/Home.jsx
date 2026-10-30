@@ -364,7 +364,7 @@ export default function Home() {
             <div className="flex items-center gap-5 sm:gap-7 pt-2 text-xs text-slate-500 dark:text-neutral-400 font-medium">
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-red-600" />
-                <span>100% Free Forever</span>
+                <span>100% Free</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
