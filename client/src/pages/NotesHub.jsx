@@ -74,6 +74,7 @@ export default function NotesHub() {
   const [uploadFileType, setUploadFileType] = useState("pdf");
   const [uploadExtractedText, setUploadExtractedText] = useState("");
   const [uploadSaving, setUploadSaving] = useState(false);
+  const [uploadReading, setUploadReading] = useState(false);
 
   // Fetch all notes
   const fetchNotes = async () => {
@@ -141,6 +142,11 @@ export default function NotesHub() {
     const file = e.target.files[0];
     if (!file) return;
 
+    if (file.size > 25 * 1024 * 1024) {
+      toast.error("File is too large. Please select a document under 25 MB.");
+      return;
+    }
+
     setUploadFile(file);
     if (!uploadTitle) {
       const cleanName = file.name.replace(/\.[^/.]+$/, "").replace(/[-_]/g, " ");
@@ -156,19 +162,59 @@ export default function NotesHub() {
       setUploadFileType("note");
     }
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-      setUploadFileData(event.target.result);
+    setUploadReading(true);
 
-      if (file.type.includes("text") || lowerName.endsWith(".csv")) {
-        const textReader = new FileReader();
-        textReader.onload = (te) => {
-          setUploadExtractedText(te.target.result.slice(0, 10000));
-        };
-        textReader.readAsText(file);
-      }
-    };
-    reader.readAsDataURL(file);
+    // Vercel serverless request body has a strict 4.5MB ceiling.
+    // Base64 expands files by 33%. Files under 2.5MB can safely store full base64 for direct downloads.
+    const canStoreBinary = file.size <= 2.5 * 1024 * 1024;
+
+    if (canStoreBinary) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setUploadFileData(event.target.result);
+        setUploadReading(false);
+      };
+      reader.onerror = () => {
+        setUploadFileData("");
+        setUploadReading(false);
+      };
+      reader.readAsDataURL(file);
+    } else {
+      // Large file: omit heavy base64 payload to prevent HTTP 413 Payload Too Large from Vercel
+      setUploadFileData("");
+      setUploadReading(false);
+    }
+
+    // Client-side text extraction for AI Chatbot and preview
+    if (file.type.includes("text") || lowerName.endsWith(".csv") || lowerName.endsWith(".md") || lowerName.endsWith(".txt")) {
+      const textReader = new FileReader();
+      textReader.onload = (te) => {
+        setUploadExtractedText((te.target.result || "").slice(0, 15000));
+      };
+      textReader.readAsText(file);
+    } else if (lowerName.endsWith(".pdf")) {
+      const textReader = new FileReader();
+      textReader.onload = (te) => {
+        try {
+          const raw = te.target.result || "";
+          const matches = [];
+          const regex = /\(([^()]{2,120})\)\s*Tj/g;
+          let m;
+          while ((m = regex.exec(raw)) !== null && matches.length < 500) {
+            matches.push(m[1]);
+          }
+          if (matches.length > 5) {
+            setUploadExtractedText(matches.join(" ").slice(0, 15000));
+          } else {
+            const words = raw.match(/[A-Za-z0-9\s,\.\?\:\;\-]{4,100}/g) || [];
+            setUploadExtractedText(words.slice(0, 400).join(" ").slice(0, 12000));
+          }
+        } catch {
+          // Fallback handled on server
+        }
+      };
+      textReader.readAsText(file);
+    }
   };
 
   // Submit Note / Upload (Clean & Minimal)
@@ -190,20 +236,29 @@ export default function NotesHub() {
         fileType: uploadFileType,
         fileName: uploadFile ? uploadFile.name : `${uploadTitle.trim().replace(/\s+/g, "_")}.${uploadFileType === "excel" ? "xlsx" : uploadFileType === "pdf" ? "pdf" : "txt"}`,
         fileSize: uploadFile ? uploadFile.size : 1024,
-        fileData: uploadFileData,
+        fileData: uploadFileData || "",
         extractedText: uploadExtractedText || uploadTitle.trim(),
         tags: [uploadCategoryType, uploadFileType],
       };
 
       const res = await api.post("/notes-hub", payload);
       if (res.data?.success) {
-        toast.success("Document saved successfully!");
+        toast.success(
+          uploadFile && uploadFile.size > 2.5 * 1024 * 1024
+            ? "Document saved & text indexed for AI!"
+            : "Document saved successfully!"
+        );
         setIsUploadOpen(false);
         resetUploadForm();
         await fetchNotes();
       }
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to save document");
+      const errMsg =
+        err.response?.data?.message ||
+        (err.response?.status === 413
+          ? "File exceeds cloud upload limit. Please try a file under 2.5 MB."
+          : "Failed to save document");
+      toast.error(errMsg);
     } finally {
       setUploadSaving(false);
     }
@@ -216,6 +271,7 @@ export default function NotesHub() {
     setUploadFileData("");
     setUploadFileType("pdf");
     setUploadExtractedText("");
+    setUploadReading(false);
   };
 
   // Delete note
@@ -772,7 +828,16 @@ export default function NotesHub() {
                 <div className="flex flex-col items-center">
                   <Upload className="w-5 h-5 text-[#E04D4D] mb-1" />
                   <p className="font-medium text-slate-800 dark:text-neutral-200 text-xs truncate max-w-[240px]">
-                    {uploadFile ? uploadFile.name : "Click or drop your file here"}
+                    {uploadReading ? (
+                      <span className="text-[#E04D4D] inline-flex items-center justify-center gap-1.5">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        Reading document...
+                      </span>
+                    ) : uploadFile ? (
+                      uploadFile.name
+                    ) : (
+                      "Click or drop your file here"
+                    )}
                   </p>
                   <p className="text-[10px] text-slate-400 dark:text-neutral-500 mt-0.5">
                     Supports .pdf, .xlsx, .xls, .csv, .txt
@@ -822,11 +887,11 @@ export default function NotesHub() {
                 </button>
                 <button
                   type="submit"
-                  disabled={uploadSaving}
+                  disabled={uploadSaving || uploadReading}
                   className="px-4 py-1.5 rounded-xl bg-red-500/10 hover:bg-red-500/20 disabled:opacity-50 text-[#E04D4D] dark:text-red-400 border border-red-500/30 hover:border-red-500/50 font-medium shadow-xs cursor-pointer flex items-center gap-1.5 text-xs transition-colors"
                 >
-                  {uploadSaving && <Loader2 className="w-3 h-3 animate-spin text-[#E04D4D]" />}
-                  <span>Save to Hub</span>
+                  {(uploadSaving || uploadReading) && <Loader2 className="w-3 h-3 animate-spin text-[#E04D4D]" />}
+                  <span>{uploadReading ? "Reading..." : uploadSaving ? "Saving..." : "Save to Hub"}</span>
                 </button>
               </div>
             </form>

@@ -193,6 +193,12 @@ exports.createNote = async (req, res) => {
       resolvedExtractedText = extractTextFromPdf(fileData);
     }
 
+    // Safety guard: drop oversized base64 strings to stay within MongoDB BSON limits
+    let safeFileData = fileData || "";
+    if (safeFileData && safeFileData.length > 4000000) {
+      safeFileData = "";
+    }
+
     const note = await DocumentNote.create({
       userId,
       title: title.trim(),
@@ -202,7 +208,7 @@ exports.createNote = async (req, res) => {
       fileType: ["pdf", "excel", "note"].includes(fileType) ? fileType : "note",
       fileName: fileName.trim(),
       fileSize: Number(fileSize) || 0,
-      fileData: fileData || "",
+      fileData: safeFileData,
       extractedText: resolvedExtractedText,
       tags: Array.isArray(tags) ? tags.map((t) => String(t).trim().toLowerCase()) : [],
     });
@@ -216,7 +222,7 @@ exports.createNote = async (req, res) => {
     console.error("Error creating note:", error.message);
     return res.status(500).json({
       success: false,
-      message: "Failed to save note",
+      message: error.message || "Failed to save note",
     });
   }
 };
