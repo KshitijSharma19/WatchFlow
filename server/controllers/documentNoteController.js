@@ -1,5 +1,58 @@
 const axios = require("axios");
+const zlib = require("zlib");
 const DocumentNote = require("../models/DocumentNote");
+
+/**
+ * Lightweight helper to extract text from a base64 PDF using PDF stream decompilation
+ */
+function extractTextFromPdf(base64Data) {
+  try {
+    if (!base64Data) return "";
+    const raw = base64Data.includes("base64,") ? base64Data.split("base64,")[1] : base64Data;
+    const buf = Buffer.from(raw, "base64");
+    const pdfString = buf.toString("latin1");
+    let fullText = "";
+
+    const streamRegex = /stream\r?\n([\s\S]*?)\r?\nendstream/g;
+    let match;
+    let streamCount = 0;
+    while ((match = streamRegex.exec(pdfString)) !== null && streamCount < 100) {
+      streamCount++;
+      const rawStream = Buffer.from(match[1], "latin1");
+      let decompressed = null;
+      try {
+        decompressed = zlib.inflateSync(rawStream);
+      } catch {
+        decompressed = rawStream;
+      }
+
+      const streamContent = decompressed.toString("latin1");
+
+      const tjRegex = /\((.*?)\)\s*Tj/g;
+      let tjMatch;
+      while ((tjMatch = tjRegex.exec(streamContent)) !== null) {
+        fullText += tjMatch[1] + " ";
+      }
+
+      const tjArrayRegex = /\[(.*?)\]\s*TJ/g;
+      let tjArrMatch;
+      while ((tjArrMatch = tjArrayRegex.exec(streamContent)) !== null) {
+        const innerTjRegex = /\((.*?)\)/g;
+        let innerMatch;
+        while ((innerMatch = innerTjRegex.exec(tjArrMatch[1])) !== null) {
+          fullText += innerMatch[1];
+        }
+        fullText += " ";
+      }
+    }
+
+    const cleaned = fullText.replace(/[^\x20-\x7E\n\r\t]/g, " ").replace(/\s+/g, " ").trim();
+    return cleaned.slice(0, 15000);
+  } catch (err) {
+    console.warn("Failed to extract text from PDF:", err.message);
+    return "";
+  }
+}
 
 /**
  * Get all document notes for the authenticated user with optional filtering
@@ -135,6 +188,11 @@ exports.createNote = async (req, res) => {
       ? categoryName.trim()
       : (safePillar.charAt(0).toUpperCase() + safePillar.slice(1));
 
+    let resolvedExtractedText = extractedText || "";
+    if (!resolvedExtractedText && fileType === "pdf" && fileData) {
+      resolvedExtractedText = extractTextFromPdf(fileData);
+    }
+
     const note = await DocumentNote.create({
       userId,
       title: title.trim(),
@@ -145,7 +203,7 @@ exports.createNote = async (req, res) => {
       fileName: fileName.trim(),
       fileSize: Number(fileSize) || 0,
       fileData: fileData || "",
-      extractedText: extractedText || "",
+      extractedText: resolvedExtractedText,
       tags: Array.isArray(tags) ? tags.map((t) => String(t).trim().toLowerCase()) : [],
     });
 
@@ -442,7 +500,7 @@ exports.askPdfChatbot = async (req, res) => {
 
     let targetNote = null;
     let contextText = "";
-    let inlinePdfPart = null;
+    let inlineImagePart = null;
 
     if (noteId) {
       targetNote = await DocumentNote.findOne({ _id: noteId, userId });
@@ -451,16 +509,24 @@ exports.askPdfChatbot = async (req, res) => {
         contextText += `Category: ${targetNote.categoryType.toUpperCase()} > ${targetNote.categoryName}\n`;
         contextText += `File Type: ${targetNote.fileType.toUpperCase()}\n`;
         if (targetNote.description) contextText += `Description: ${targetNote.description}\n`;
-        if (targetNote.extractedText) contextText += `Document Content / Notes:\n"""\n${targetNote.extractedText}\n"""\n\n`;
 
-        // If the document is a PDF and has base64 fileData, we can optionally pass it as inlineData to Gemini!
-        if (targetNote.fileType === "pdf" && targetNote.fileData && targetNote.fileData.includes("base64,")) {
-          const rawBase64 = targetNote.fileData.split("base64,")[1];
-          // Limit inline base64 to ~8MB to ensure smooth API transmission
-          if (rawBase64 && rawBase64.length < 10000000) {
-            inlinePdfPart = {
+        let docContent = targetNote.extractedText || "";
+        if (!docContent && targetNote.fileType === "pdf" && targetNote.fileData) {
+          docContent = extractTextFromPdf(targetNote.fileData);
+        }
+        if (docContent) {
+          contextText += `Document Content / Notes:\n"""\n${docContent.slice(0, 15000)}\n"""\n\n`;
+        }
+
+        // If file is an image, attach it via supported inlineData
+        if (targetNote.fileData && targetNote.fileData.startsWith("data:image/")) {
+          const parts = targetNote.fileData.split(";base64,");
+          const mime = parts[0].replace("data:", "") || "image/png";
+          const rawBase64 = parts[1];
+          if (rawBase64 && rawBase64.length < 5000000) {
+            inlineImagePart = {
               inlineData: {
-                mimeType: "application/pdf",
+                mimeType: mime,
                 data: rawBase64,
               },
             };
@@ -497,15 +563,20 @@ Guidelines:
     if (apiKey) {
       const parts = [];
 
-      if (inlinePdfPart) {
-        parts.push(inlinePdfPart);
+      if (inlineImagePart) {
+        parts.push(inlineImagePart);
       }
 
       const promptMessage = `${systemInstruction}\n\n${contextText ? `DOCUMENT CONTEXT:\n${contextText}` : ""}\n\nSTUDENT QUESTION:\n${query.trim()}`;
       parts.push({ text: promptMessage });
 
-      // Try modern Gemini models with fallback
-      const modelsToTry = ["gemini-1.5-flash", "gemini-2.5-flash", "gemini-flash-latest"];
+      // Active modern Gemini models with fallback (1.5 and 2.5 are deprecated)
+      const modelsToTry = [
+        "gemini-3.5-flash-lite",
+        "gemini-3.5-flash",
+        "gemini-flash-lite-latest",
+        "gemini-3.8-flash",
+      ];
       let aiResponseText = null;
 
       for (const model of modelsToTry) {
@@ -525,7 +596,7 @@ Guidelines:
                 "Content-Type": "application/json",
                 "x-goog-api-key": apiKey,
               },
-              timeout: 25000,
+              timeout: 12000,
             }
           );
 
@@ -555,9 +626,11 @@ Guidelines:
     });
   } catch (error) {
     console.error("AI PDF Chatbot Error:", error.message);
-    return res.status(500).json({
-      success: false,
-      message: "Failed to answer query",
+    const fallbackAnswer = generateIntelligentFallback(req.body?.query || "help", null, "");
+    return res.status(200).json({
+      success: true,
+      answer: fallbackAnswer,
+      source: "Study Hub Assistant",
     });
   }
 };

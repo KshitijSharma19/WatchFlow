@@ -57,7 +57,7 @@ export default function RoadmapPage() {
   const [selectedSheetId, setSelectedSheetId] = useState("leetcode-top-150");
 
   // AI "Learn Anything" specific state
-  const [aiTopic, setAiTopic] = useState("Docker & Kubernetes");
+  const [aiTopic, setAiTopic] = useState("");
   const [isGeneratingAi, setIsGeneratingAi] = useState(false);
 
   // Video Roadmap state
@@ -833,6 +833,11 @@ export default function RoadmapPage() {
                         type="text"
                         value={aiTopic}
                         onChange={(e) => setAiTopic(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && aiTopic.trim() && !isGeneratingAi) {
+                            handleBuildAiRoadmap();
+                          }
+                        }}
                         placeholder="e.g. Spring Boot, Docker & Kubernetes, System Design, Rust, React..."
                         className="w-full pl-10 pr-4 py-3 rounded-xl bg-white dark:bg-neutral-900 border border-slate-200 dark:border-neutral-800 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-neutral-500 focus:outline-none focus:border-[#E04D4D] focus:ring-1 focus:ring-[#E04D4D] transition shadow-xs"
                       />
@@ -968,7 +973,10 @@ export default function RoadmapPage() {
                 <div className="pt-4 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
                   <button
                     type="button"
-                    disabled={isGeneratingAi}
+                    disabled={
+                      isGeneratingAi ||
+                      (buildCategory === "ai" && !aiTopic.trim())
+                    }
                     onClick={
                       buildCategory === "dsa"
                         ? handleBuildDsaRoadmap

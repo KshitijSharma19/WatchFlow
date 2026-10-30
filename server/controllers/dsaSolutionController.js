@@ -164,9 +164,10 @@ JSON Schema:
   // 2. Try Gemini API
   if (geminiApiKey) {
     const models = [
-      "gemini-2.5-flash",
+      "gemini-3.5-flash-lite",
       "gemini-3.5-flash",
-      "gemini-flash-latest",
+      "gemini-flash-lite-latest",
+      "gemini-3.8-flash",
     ];
 
     for (const model of models) {
