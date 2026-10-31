@@ -89,8 +89,9 @@ export default function AuthPage() {
     setGithubLoading(true);
 
     const apiBase =
-      import.meta.env.VITE_API_URL ||
-      (import.meta.env.PROD ? "/api" : "http://localhost:5000/api");
+      typeof window !== "undefined" && (import.meta.env.PROD || !window.location.hostname.includes("localhost"))
+        ? "/api"
+        : (import.meta.env.VITE_API_URL || "http://localhost:5000/api");
     window.location.href = `${apiBase}/auth/github`;
   };
 
@@ -99,8 +100,9 @@ export default function AuthPage() {
     setGoogleLoading(true);
 
     const apiBase =
-      import.meta.env.VITE_API_URL ||
-      (import.meta.env.PROD ? "/api" : "http://localhost:5000/api");
+      typeof window !== "undefined" && (import.meta.env.PROD || !window.location.hostname.includes("localhost"))
+        ? "/api"
+        : (import.meta.env.VITE_API_URL || "http://localhost:5000/api");
     window.location.href = `${apiBase}/auth/google`;
   };
 

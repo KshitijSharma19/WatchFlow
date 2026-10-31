@@ -6,20 +6,36 @@ const generateToken = require("../utils/generateToken");
 const userResponse = require("../utils/userResponse");
 
 const getClientUrl = (req) => {
-  let clientUrl = process.env.CLIENT_URL;
+  // 1. Detect incoming request host to automatically support custom domains (watchflow.app, www.watchflow.app)
+  const host = req?.headers ? (req.headers["x-forwarded-host"] || req.headers.host) : null;
+  const proto = req?.headers ? (req.headers["x-forwarded-proto"] || (req.secure ? "https" : "http")) : "https";
 
-  // Smart fallback if CLIENT_URL is empty, default placeholder, or contains example.com
-  if (!clientUrl || clientUrl.includes("example.com")) {
-    const host = req.headers["x-forwarded-host"] || req.headers.host;
-    const proto = req.headers["x-forwarded-proto"] || "https";
-    if (host && !host.includes("localhost")) {
-      clientUrl = `${proto}://${host}`;
-    } else {
-      clientUrl = "http://localhost:5173";
+  if (host) {
+    const hostname = host.split(":")[0].toLowerCase();
+    if (
+      hostname === "watchflow.app" ||
+      hostname === "www.watchflow.app" ||
+      hostname.endsWith(".watchflow.app") ||
+      hostname === "localhost" ||
+      hostname === "127.0.0.1"
+    ) {
+      const port = host.includes(":") ? `:${host.split(":")[1]}` : "";
+      return `${proto}://${hostname}${port}`;
     }
   }
 
-  return clientUrl.replace(/\/+$/, "");
+  // 2. Check process.env.CLIENT_URL
+  let clientUrl = process.env.CLIENT_URL;
+  if (clientUrl && !clientUrl.includes("example.com")) {
+    return clientUrl.replace(/\/+$/, "");
+  }
+
+  // 3. Fallback to host or localhost default
+  if (host && !host.includes("localhost")) {
+    return `${proto}://${host}`;
+  }
+
+  return "http://localhost:5173";
 };
 
 const getGoogleCallbackUrl = (req) => {
@@ -395,14 +411,39 @@ exports.githubAuth = (req, res) => {
     );
   }
 
-  const githubUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=read:user,user:email`;
+  // Preserve the initiating domain in state
+  const state = Buffer.from(JSON.stringify({ origin: clientUrl })).toString("base64");
+  const githubUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=read:user,user:email&state=${encodeURIComponent(state)}`;
   res.redirect(githubUrl);
 };
 
 // Handle GitHub redirect callback on backend
 exports.githubAuthCallback = async (req, res) => {
-  const { code, error, error_description } = req.query;
-  const clientUrl = getClientUrl(req);
+  const { code, error, error_description, state } = req.query;
+  let clientUrl = getClientUrl(req);
+
+  // If state was provided, safely restore the originating domain
+  if (state) {
+    try {
+      const parsed = JSON.parse(Buffer.from(state, "base64").toString("utf-8"));
+      if (parsed?.origin) {
+        const originUrl = new URL(parsed.origin);
+        const originHost = originUrl.hostname.toLowerCase();
+        if (
+          originHost === "watchflow.app" ||
+          originHost === "www.watchflow.app" ||
+          originHost.endsWith(".watchflow.app") ||
+          originHost === "localhost" ||
+          originHost === "127.0.0.1" ||
+          originHost.endsWith(".vercel.app")
+        ) {
+          clientUrl = parsed.origin.replace(/\/+$/, "");
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
 
   if (error || !code) {
     const errMsg = error_description || error || "GitHub authorization canceled";
@@ -465,21 +506,47 @@ exports.googleAuth = (req, res) => {
   }
 
   const callbackUrl = getGoogleCallbackUrl(req);
+  // Preserve the initiating domain in state so the callback redirects back to watchflow.app or www.watchflow.app
+  const state = Buffer.from(JSON.stringify({ origin: clientUrl })).toString("base64");
+
   const googleUrl = `https://accounts.google.com/o/oauth2/v2/auth?client_id=${encodeURIComponent(
     clientId,
   )}&redirect_uri=${encodeURIComponent(
     callbackUrl,
   )}&response_type=code&scope=${encodeURIComponent(
     "openid email profile",
-  )}&access_type=offline&prompt=select_account`;
+  )}&access_type=offline&prompt=select_account&state=${encodeURIComponent(state)}`;
 
   res.redirect(googleUrl);
 };
 
 // Handle Google redirect callback on backend
 exports.googleAuthCallback = async (req, res) => {
-  const { code, error, error_description } = req.query;
-  const clientUrl = getClientUrl(req);
+  const { code, error, error_description, state } = req.query;
+  let clientUrl = getClientUrl(req);
+
+  // If state was provided, safely restore the originating domain
+  if (state) {
+    try {
+      const parsed = JSON.parse(Buffer.from(state, "base64").toString("utf-8"));
+      if (parsed?.origin) {
+        const originUrl = new URL(parsed.origin);
+        const originHost = originUrl.hostname.toLowerCase();
+        if (
+          originHost === "watchflow.app" ||
+          originHost === "www.watchflow.app" ||
+          originHost.endsWith(".watchflow.app") ||
+          originHost === "localhost" ||
+          originHost === "127.0.0.1" ||
+          originHost.endsWith(".vercel.app")
+        ) {
+          clientUrl = parsed.origin.replace(/\/+$/, "");
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }
 
   if (error || !code) {
     const errMsg = error_description || error || "Google authorization canceled";

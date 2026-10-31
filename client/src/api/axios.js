@@ -1,9 +1,20 @@
 import axios from "axios";
 
+export const getApiBaseUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL;
+
+  // In production or on custom domains (like watchflow.app), route relatively via /api to stay on the same domain
+  if (typeof window !== "undefined") {
+    if (import.meta.env.PROD || !window.location.hostname.includes("localhost")) {
+      return "/api";
+    }
+  }
+
+  return envUrl || (import.meta.env.PROD ? "/api" : "http://localhost:5000/api");
+};
+
 const api = axios.create({
-  baseURL:
-    import.meta.env.VITE_API_URL ||
-    (import.meta.env.PROD ? "/api" : "http://localhost:5000/api"),
+  baseURL: getApiBaseUrl(),
   timeout: 90000,
 });
 
